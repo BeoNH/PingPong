@@ -1,0 +1,26 @@
+---
+description: Tổng quan dự án PingPong và quy ước chung
+alwaysApply: true
+---
+
+# PingPong — Cocos Creator 3.8.7
+
+Dự án game Ping Pong viết bằng TypeScript trên Cocos Creator.
+
+## Cấu trúc thư mục
+
+- `assets/scripts/` — mã nguồn TypeScript (Component, Manager, Utils)
+- `assets/scenes/` — scene game (ví dụ: `Game.scene`)
+- `assets/resources/` — tài nguyên load động
+
+## Thư mục không chỉnh sửa
+
+Không tạo hoặc sửa file trong: `library/`, `temp/`, `local/`, `build/`, `profiles/`.
+
+## Nguyên tắc làm việc
+
+- Giữ diff nhỏ, tập trung đúng yêu cầu
+- Khớp convention và style code hiện có trong repo
+- Chỉ commit khi được yêu cầu rõ ràng
+- Trả lời bằng tiếng Việt trừ khi user yêu cầu ngôn ngữ khác
+- **Không** chạy `@lobehub/market-cli` — project không dùng LobeHub CLI

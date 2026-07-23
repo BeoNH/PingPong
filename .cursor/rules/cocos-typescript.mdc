@@ -1,0 +1,64 @@
+---
+description: Quy ước TypeScript và Cocos Creator theo TheOne Studio standards
+globs: assets/**/*.ts
+alwaysApply: false
+---
+
+# Cocos Creator TypeScript (TheOne Standards)
+
+Đọc skill `theone-cocos-standards` trong `.cursor/skills/the1studio-theone-training-skills-theone-cocos-standards/SKILL.md` khi viết hoặc review code.
+
+## Component mẫu
+
+```typescript
+import { _decorator, Component, Node } from 'cc';
+const { ccclass, property } = _decorator;
+
+@ccclass('BallController')
+export class BallController extends Component {
+    @property(Node)
+    private readonly paddleNode: Node | null = null;
+
+    private static readonly MAX_SPEED = 600;
+    private currentSpeed = 300;
+
+    protected onLoad(): void {
+        if (!this.paddleNode) {
+            throw new Error('BallController: paddleNode is required');
+        }
+    }
+
+    protected onEnable(): void {
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    }
+
+    protected onDisable(): void {
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    }
+
+    protected update(deltaTime: number): void {
+        // Tránh cấp phát bộ nhớ mới trong update()
+    }
+
+    private onTouchStart(): void {
+        if (CC_DEBUG) {
+            console.log('Touch start');
+        }
+    }
+}
+```
+
+## Quy ước bắt buộc
+
+- Access modifier trên mọi member (`public`/`private`/`protected`)
+- `@property` + `readonly` khi không gán lại
+- Validate reference bắt buộc trong `onLoad()`, throw nếu null
+- Event: đăng ký `onEnable()`, hủy `onDisable()`, cleanup `onDestroy()`
+- Không dùng `any`; không comment inline — đặt tên mô tả rõ
+- Một file = một `@ccclass` chính (PascalCase)
+
+## Đặt tên
+
+- File & class: `PascalCase`
+- Biến/hàm: `camelCase`
+- Hằng số: `UPPER_SNAKE_CASE`

@@ -1,0 +1,17 @@
+{
+  "name": "PingPong",
+  "uuid": "b651ab06-d8d9-46fd-a766-7d5723863276",
+  "creator": {
+    "version": "3.8.7"
+  },
+  "scripts": {
+    "lint": "eslint \"assets/**/*.ts\" --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint \"assets/**/*.ts\" --fix --no-error-on-unmatched-pattern"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^8.57.1",
+    "typescript": "^5.7.0"
+  }
+}
