@@ -11,11 +11,28 @@ Dự án game Ping Pong viết bằng TypeScript trên Cocos Creator.
 
 - `assets/scripts/` — mã nguồn TypeScript (Component, Manager, Utils)
 - `assets/scenes/` — scene game (ví dụ: `Game.scene`)
-- `assets/resources/` — tài nguyên load động
+- `assets/resources/` — tài nguyên load runtime
 
 ## Thư mục không chỉnh sửa
 
 Không tạo hoặc sửa file trong: `library/`, `temp/`, `local/`, `build/`, `profiles/`.
+
+## Engine
+
+- Chỉ dùng API **Cocos Creator 3.x** (`import { ... } from 'cc'`), không dùng API 2.x.
+- Không tự bịa API; nếu không chắc, kiểm tra docs hoặc hỏi user.
+
+## Skill & rules
+
+- Chuẩn TheOne: đọc `.cursor/skills/theone-cocos-standards/SKILL.md` khi viết/review code TypeScript.
+- Chi tiết sâu: `references/` trong skill — chỉ mở file cần thiết.
+- Rule `cocos-typescript.mdc` bật khi làm việc với `assets/**/*.ts`.
+
+## Docs & workflow
+
+- Luồng tính năng: **Spec → Plan → Implement → Sync docs → Review** — chi tiết `docs/WORKFLOW.md`
+- Spec tính năng: `docs/features/Fxxx-*.md` (template: `docs/features/_template.md`)
+- Sau implement: cập nhật `docs/01-MODULES.md`, `docs/02-SCENES.md`, `docs/04-CHANGELOG.md`
 
 ## Nguyên tắc làm việc
 

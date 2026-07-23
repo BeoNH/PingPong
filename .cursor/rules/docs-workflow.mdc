@@ -1,0 +1,37 @@
+---
+description: Luồng Spec → Plan → Implement → Sync docs → Review cho tính năng PingPong
+alwaysApply: true
+---
+
+# Docs & workflow
+
+Chi tiết: `docs/WORKFLOW.md`
+
+## Trước khi code tính năng
+
+1. Đọc spec `docs/features/Fxxx-*.md` (tạo từ `docs/features/_template.md` nếu chưa có)
+2. Đọc `docs/03-ARCHITECTURE.md` và module liên quan trong `docs/01-MODULES.md`
+3. Không implement nếu spec còn `[TBD]` hoặc thiếu acceptance criteria
+
+## Sau khi implement
+
+Cập nhật bắt buộc:
+
+- `docs/01-MODULES.md` — trạng thái module
+- `docs/02-SCENES.md` — scene/prefab/script mới
+- `docs/04-CHANGELOG.md` — một dòng mỗi thay đổi
+- File spec — trạng thái `done`, tick plan
+
+## Phân công Editor vs Agent
+
+- **Agent:** TypeScript trong `assets/scripts/`, cập nhật docs
+- **Human (Editor):** Prefab, wire `@property`, collider/sprite — ghi trong spec mục *Scene / Prefab*
+
+## Tra cứu nhanh
+
+| Cần biết | File |
+|----------|------|
+| Game loop, mechanics | `docs/00-GDD.md` |
+| Module & phụ thuộc | `docs/01-MODULES.md` |
+| Scene & prefab | `docs/02-SCENES.md` |
+| Manager, event, state | `docs/03-ARCHITECTURE.md` |

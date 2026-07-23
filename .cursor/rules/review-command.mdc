@@ -1,0 +1,32 @@
+---
+description: Lệnh /da-kiem-tra-xong — tự tick review Play mode trong docs sau khi Human test xong
+alwaysApply: true
+---
+
+# Lệnh xác nhận review — `/da-kiem-tra-xong`
+
+Khi user gửi **một trong các câu/lệnh sau**, coi là đã test Play mode xong và **chạy script** (không tick tay từng checkbox):
+
+- `/da-kiem-tra-xong`
+- `/da kiem tra xong`
+- `/review-done`
+
+Có thể kèm feature ID: `/da-kiem-tra-xong F001` hoặc `/review-done F002`.
+
+## Agent phải làm
+
+1. Chạy: `npm run review:done -- [Fxxx]` (bỏ `[Fxxx]` nếu user không chỉ định — script tự tìm feature `in-progress`)
+2. Xem output script; báo user file nào đã cập nhật
+3. **Không** hỏi lại từng checkbox — user đã xác nhận bằng lệnh
+
+Tuỳ chọn xem trước: `node scripts/mark-review-done.mjs --dry-run F001`
+
+## Script cập nhật
+
+| File | Nội dung |
+|------|----------|
+| `docs/features/Fxxx-*.md` | Trạng thái → `done`; tick Acceptance criteria; tick Plan mục Human/Play mode |
+| `docs/02-SCENES.md` | Tick checklist Play mode / onLoad / acceptance criteria |
+| `docs/04-CHANGELOG.md` | Một dòng review (nếu chưa có) |
+
+Chi tiết workflow: `docs/WORKFLOW.md` — mục *Lệnh xác nhận review*.

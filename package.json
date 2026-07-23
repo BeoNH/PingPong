@@ -6,7 +6,8 @@
   },
   "scripts": {
     "lint": "eslint \"assets/**/*.ts\" --no-error-on-unmatched-pattern",
-    "lint:fix": "eslint \"assets/**/*.ts\" --fix --no-error-on-unmatched-pattern"
+    "lint:fix": "eslint \"assets/**/*.ts\" --fix --no-error-on-unmatched-pattern",
+    "review:done": "node scripts/mark-review-done.mjs"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.18.0",
