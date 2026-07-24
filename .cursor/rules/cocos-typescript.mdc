@@ -1,26 +1,23 @@
 ---
-description: Checklist TypeScript Cocos — trỏ tới skill TheOne, không lặp chi tiết
+description: Checklist TypeScript Cocos Creator 3.x
 globs: assets/**/*.ts
 alwaysApply: false
 ---
 
-# Cocos TypeScript (TheOne)
+# Cocos TypeScript
 
-**Đọc trước:** `.cursor/skills/theone-cocos-standards/SKILL.md`
+Chi tiết sâu (nếu có skill): `.cursor/skills/theone-cocos-standards/SKILL.md`
 
-Skill là nguồn chính (chất lượng code, lifecycle, event, performance playable). Rule này chỉ nhắc nhanh — không thay skill.
+Inspector + JSDoc: rule `cocos-inspector-docs.mdc`.
 
-## Checklist nhanh
+## Checklist
 
 - Access modifier trên mọi member; `@property` + `readonly` khi không gán lại
 - Validate reference bắt buộc trong `onLoad()`, throw nếu null
 - Event: đăng ký `onEnable()`, hủy `onDisable()`, cleanup `onDestroy()`
 - Lifecycle: `onLoad → start → onEnable → update → onDisable → onDestroy`
-- Không `any`; không comment inline — đặt tên mô tả rõ
+- Không `any`; không comment inline trong method
 - Không cấp phát bộ nhớ mới trong `update()`
 - Một file = một `@ccclass` chính (PascalCase)
-- `npm run lint` / `"strict": true` trong `tsconfig.json`
-
-## Đặt tên
-
-- File & class: `PascalCase` — Biến/hàm: `camelCase` — Hằng số: `UPPER_SNAKE_CASE`
+- File/class `PascalCase` · biến/hàm `camelCase` · hằng `UPPER_SNAKE_CASE`
+- `"strict": true` trong `tsconfig.json`; lint pass

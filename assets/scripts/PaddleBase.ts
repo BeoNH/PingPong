@@ -70,4 +70,11 @@ export class PaddleBase extends Component {
         this.tempPosition.y = 0;
         this.applyClampedY(this.tempPosition.y);
     }
+
+    /** Cập nhật biên dọc khi canvas đổi kích thước. */
+    public applyCourtBounds(bottom: number, top: number): void {
+        this.courtBottom = bottom;
+        this.courtTop = top;
+        this.applyClampedY(this.node.position.y);
+    }
 }

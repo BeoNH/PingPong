@@ -2,7 +2,7 @@
 
 Tài liệu **cụ thể cho repo này** — bổ sung cho coding rules chung (`.cursor/skills/theone-cocos-standards/`).
 
-> Trạng thái hiện tại: **F006 done** — Menu ↔ Game scene flow.
+> Trạng thái hiện tại: **F010 in-progress** — popup Game Over + hướng dẫn Menu (UiPopup). F007 planned (chờ asset audio).
 
 ## Nguyên tắc
 
@@ -23,6 +23,7 @@ flowchart TB
   IH[InputHandler]
   HUD[HudController]
   MC[MenuController]
+  AM[AudioManager]
 
   MC -->|loadScene| GM
   HUD -->|loadScene Menu| MC
@@ -30,9 +31,12 @@ flowchart TB
   PP --> BM
   AP --> BM
   BM --> GM
+  BM -->|paddle-hit| AM
   GM --> SM
   SM --> HUD
+  SM -->|score-changed| AM
   GM --> HUD
+  GM -->|match-ended| AM
 ```
 
 ## Managers & Components
@@ -41,11 +45,15 @@ flowchart TB
 |------------|---------|-----------------|
 | `GameManager` | State machine + delay 1s giữa điểm; `GameOver` + `match-ended` | Lắng nghe `ball-out` |
 | `BallController` | Custom velocity move; va chạm 2 vợt; phát `paddle-hit`, `ball-out` | `update` chỉ khi `setPlaying(true)` |
-| `AiPaddle` | Đuổi bóng theo trục Y, tốc độ/phản xạ config `@property` | `update` khi bóng qua `chaseThresholdX` |
+| `AiPaddle` | Đuổi bóng theo preset độ khó (`AiDifficulty`) | `start()` → `applyDifficulty()` |
 | `ScoreManager` | Điểm player/AI, win `@property winScore` (5) | `addPoint()` → `score-changed` |
-| `HudController` | Label tỉ số + message + nút Chơi lại/Menu | Lắng nghe `score-changed`, `match-ended` |
-| `MenuController` | Nút Chơi → `loadScene(Game)` | `onEnable` đăng ký click |
+| `HudController` | Score HUD + popup Game Over (`UiPopup`) | Lắng nghe `score-changed`, `match-ended` |
+| `UiPopup` | Base popup — tween bg/container, attach PopupRoot, destroy sau hide | Không gắn scene; dùng trên prefab |
+| `GameOverPopup` | Prefab Game Over — nút Chơi lại / Menu | `open()` + callback |
+| `TutorialPopup` | Prefab hướng dẫn Menu — nút Đóng | `show()` / `hide()` |
+| `MenuController` | Chọn Dễ/Vừa/Khó, popup hướng dẫn, Chơi → `loadScene(Game)` | `onEnable` đăng ký click |
 | `InputHandler` | Map touch/key → vị trí vợt player | `onEnable`/`onDisable` đăng ký input |
+| `AudioManager` | SFX `playOneShot` theo event; clip `@property` tùy chọn | Lắng nghe `paddle-hit`, `score-changed`, `match-ended` |
 
 ## State machine (GameManager)
 
@@ -63,7 +71,7 @@ Ready
 
 | Event | Payload | Ghi chú |
 |-------|---------|---------|
-| `paddle-hit` | `{ side: 'player' \| 'ai', hitOffset: number }` | Điều chỉnh góc phản xạ |
+| `paddle-hit` | `{ side: 'player' \| 'ai', hitOffset: number }` | AudioManager phát SFX |
 | `ball-out` | `{ scorer: 'player' \| 'ai' }` | Bóng ra biên |
 | `score-changed` | `{ player: number, ai: number }` | |
 | `match-ended` | `{ winner: 'player' \| 'ai' }` | |
@@ -75,6 +83,7 @@ Ready
 ```
 assets/scripts/
 ├── GameEvents.ts
+├── AiDifficulty.ts
 ├── GameManager.ts
 ├── BallController.ts
 ├── PaddleBase.ts
@@ -83,9 +92,14 @@ assets/scripts/
 ├── AiPaddle.ts
 ├── ScoreManager.ts
 ├── HudController.ts
+├── popups/
+│   ├── UiPopup.ts
+│   ├── GameOverPopup.ts
+│   └── TutorialPopup.ts
+├── GameCanvasLayout.ts
 ├── MenuController.ts
+├── AudioManager.ts
 ├── SceneNames.ts
-├── AudioManager.ts      # phase sau (bỏ qua — chưa có asset)
 └── utils/
     ├── ApplyDefaultSpriteFrame.ts
     └── SceneLoader.ts

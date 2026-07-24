@@ -14,44 +14,61 @@ Menu → Game → (GameOver) → Menu | Chơi lại
 
 | Scene | Path | Mô tả | Scripts gắn | Trạng thái |
 |-------|------|-------|-------------|------------|
-| Menu | `assets/scenes/Menu.scene` | Màn hình chính — title + nút Chơi | MenuController | done |
-| Game | `assets/scenes/Game.scene` | Scene chính — sân, bóng, 2 vợt, HUD | GameManager, ScoreManager, InputHandler, BallController, PlayerPaddle, AiPaddle, HudController | done |
+| Menu | `assets/scenes/Menu.scene` | Menu — chọn độ khó, hướng dẫn, Chơi | MenuController | done |
+| Game | `assets/scenes/Game.scene` | Scene chính — sân, bóng, 2 vợt, HUD + popup Game Over | GameManager, ScoreManager, InputHandler, AudioManager*, BallController, PlayerPaddle, AiPaddle, HudController, GameCanvasLayout | done |
+
+\* `AudioManager` có sẵn (F007 planned — chờ clip)
 
 ### Menu.scene — cấu trúc node
 
 ```
 Menu (Scene)
 └── Canvas (1280×720)
-    ├── TitleLabel     [Ping Pong]
-    └── PlayButton     [Chơi → load Game]
-        └── Label
+    ├── TitleLabel       [Ping Pong]
+    ├── PlayButton       [Chơi → load Game]
+    │   └── Label
+    ├── HelpButton       [Hướng dẫn → spawn TutorialPopup prefab]
+    │   └── Label
+    ├── *(ẩn)* EasyButton / MediumButton / HardButton / DifficultyLabel — mặc định AI Vừa
 ```
+
+Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `PopupRoot` nếu có).
 
 ### Wire reference (Menu)
 
 | Component | Property | Target |
 |-----------|----------|--------|
 | `MenuController` | `playButton` | `Canvas/PlayButton` → Button |
+| `MenuController` | `easyButton` | `Canvas/EasyButton` → Button |
+| `MenuController` | `mediumButton` | `Canvas/MediumButton` → Button |
+| `MenuController` | `hardButton` | `Canvas/HardButton` → Button |
+| `MenuController` | `difficultyLabel` | `Canvas/DifficultyLabel` → Label |
+| `MenuController` | `helpButton` | `Canvas/HelpButton` → Button |
+| `MenuController` | `tutorialPopupPrefab` | `assets/prefabs/TutorialPopup.prefab` |
 
 ### Game.scene — cấu trúc node (hiện tại)
 
 ```
 Game (Scene)
-└── Canvas (1280×720, touchArea cho InputHandler)
+└── Canvas (Widget full screen + GameCanvasLayout)
     ├── Camera
-    ├── PlayerPaddle   [UITransform 20×120, Sprite default_sprite, PlayerPaddle]
-    ├── AiPaddle       [UITransform 20×120, Sprite default_sprite đỏ, AiPaddle]
-    ├── Ball           [UITransform 58×62, Sprite resources/Ball.png, BallController]
-    ├── ServeAnchor      [player serve, x:-200]
-    ├── AiServeAnchor    [AI serve, x:200]
-    ├── Managers       [InputHandler, GameManager, ScoreManager]
-    └── HUD            [HudController]
-        ├── PlayerScoreLabel
-        ├── AiScoreLabel
-        ├── MessageLabel
-        ├── RestartButton   [ẩn; hiện khi GameOver]
-        └── MenuButton      [ẩn; hiện khi GameOver → Menu]
+    ├── Playfield          [nền + tường — render dưới gameplay]
+    │   ├── Background
+    │   ├── TopWall
+    │   ├── CenterDivider
+    │   └── BottomWall
+    ├── PlayerPaddle
+    ├── Managers           [InputHandler, GameManager, ScoreManager, AudioManager]
+    ├── ServeAnchor
+    ├── Ball
+    ├── AiPaddle
+    ├── HUD                [HudController]
+    │   ├── PlayerScoreLabel
+    │   └── AiScoreLabel
+    └── AiServeAnchor
 ```
+
+Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `PopupRoot` nếu có).
 
 ### Wire reference (Inspector)
 
@@ -70,11 +87,14 @@ Game (Scene)
 | `AiPaddle` | `ballNode` | `Canvas/Ball` |
 | `HudController` | `playerScoreLabel` | `HUD/PlayerScoreLabel` → Label |
 | `HudController` | `aiScoreLabel` | `HUD/AiScoreLabel` → Label |
-| `HudController` | `messageLabel` | `HUD/MessageLabel` → Label |
 | `HudController` | `scoreManager` | `Canvas/Managers` → ScoreManager |
 | `HudController` | `gameManager` | `Canvas/Managers` → GameManager |
-| `HudController` | `restartButton` | `HUD/RestartButton` → Button |
-| `HudController` | `menuButton` | `HUD/MenuButton` → Button |
+| `HudController` | `gameOverPopupPrefab` | `assets/prefabs/GameOverPopup.prefab` |
+| `GameCanvasLayout` | *(Canvas)* | Tự tìm `Playfield/*`, `Ball`, paddles, serve anchors — chỉ config số trên Inspector |
+| `AudioManager` | `ballController` | `Canvas/Ball` → BallController |
+| `AudioManager` | `scoreManager` | `Canvas/Managers` → ScoreManager |
+| `AudioManager` | `gameManager` | `Canvas/Managers` → GameManager |
+| `AudioManager` | `paddleHitClip` / `scoreClip` / `matchEndClip` | *(Human)* import clip vào Inspector |
 
 ---
 
@@ -82,7 +102,8 @@ Game (Scene)
 
 | Prefab | Path | Dùng trong | Scripts | Trạng thái |
 |--------|------|------------|---------|------------|
-| *(chưa có)* | — | — | — | — |
+| GameOverPopup | `assets/prefabs/GameOverPopup.prefab` | Game (spawn runtime) | GameOverPopup extends UiPopup | done |
+| TutorialPopup | `assets/prefabs/TutorialPopup.prefab` | Menu (spawn runtime) | TutorialPopup extends UiPopup | done |
 
 ---
 

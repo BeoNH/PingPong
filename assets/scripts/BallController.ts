@@ -7,33 +7,37 @@ import { applyDefaultSpriteFrame } from './utils/ApplyDefaultSpriteFrame';
 
 const { ccclass, property } = _decorator;
 
+/** Điều khiển chuyển động bóng, va chạm vợt và biên sân. */
 @ccclass('BallController')
 export class BallController extends Component {
     private playing = false;
 
-    @property(PlayerPaddle)
+    @property({ type: PlayerPaddle, tooltip: 'Vợt người chơi' })
     private readonly playerPaddle: PlayerPaddle | null = null;
 
-    @property(AiPaddle)
+    @property({ type: AiPaddle, tooltip: 'Vợt AI' })
     private readonly aiPaddle: AiPaddle | null = null;
 
-    @property
-    private speed = 400;
+    @property({ tooltip: 'Tốc độ bóng (px/s)' })
+    private speed = 500;
 
-    @property
+    @property({ tooltip: 'Biên trái sân (px)' })
     private courtLeft = -500;
 
-    @property
+    @property({ tooltip: 'Biên phải sân (px)' })
     private courtRight = 500;
 
-    @property
+    @property({ tooltip: 'Biên dưới sân (px)' })
     private courtBottom = -280;
 
-    @property
+    @property({ tooltip: 'Biên trên sân (px)' })
     private courtTop = 280;
 
-    @property
+    @property({ tooltip: 'Góc bật tối đa (°)' })
     private maxBounceAngleDeg = 60;
+
+    @property({ tooltip: 'Lệch góc ngẫu nhiên (°)' })
+    private bounceAngleJitterDeg = 5;
 
     private readonly velocity: Vec3 = new Vec3();
     private readonly tempPosition: Vec3 = new Vec3();
@@ -88,6 +92,20 @@ export class BallController extends Component {
         this.playing = value;
     }
 
+    /** Ẩn/hiện bóng — ẩn thì dừng và reset vận tốc. */
+    public setVisible(value: boolean): void {
+        this.node.active = value;
+
+        if (!value) {
+            this.playing = false;
+            this.velocity.set(0, 0, 0);
+        }
+    }
+
+    public isVisible(): boolean {
+        return this.node.active;
+    }
+
     public isActive(): boolean {
         return this.playing;
     }
@@ -96,11 +114,17 @@ export class BallController extends Component {
         return this.velocity.x > 0;
     }
 
+    public getVelocityX(): number {
+        return this.velocity.x;
+    }
+
+    /** Đặt bóng tại điểm serve, chưa phát bóng. */
     public resetToServe(position: Vec3, directionX: number): void {
         this.node.setPosition(position);
         this.velocity.set(directionX * this.speed, 0, 0);
     }
 
+    /** Phát bóng theo hướng đã chuẩn hóa. */
     public launch(directionX: number, directionY = 0): void {
         const length = Math.hypot(directionX, directionY) || 1;
         this.velocity.set(
@@ -110,6 +134,15 @@ export class BallController extends Component {
         );
     }
 
+    /** Cập nhật biên sân khi canvas đổi kích thước. */
+    public applyCourtBounds(left: number, right: number, bottom: number, top: number): void {
+        this.courtLeft = left;
+        this.courtRight = right;
+        this.courtBottom = bottom;
+        this.courtTop = top;
+    }
+
+    /** Phản xạ bóng khỏi biên trên/dưới sân. */
     private resolveVerticalBounds(): void {
         if (this.tempPosition.y + this.halfHeight >= this.courtTop) {
             this.tempPosition.y = this.courtTop - this.halfHeight;
@@ -122,6 +155,7 @@ export class BallController extends Component {
         }
     }
 
+    /** Kiểm tra bóng ra biên trái/phải — emit ball-out nếu có. */
     private resolveHorizontalOut(): boolean {
         if (this.tempPosition.x - this.halfWidth <= this.courtLeft) {
             this.emitBallOut('ai');
@@ -136,12 +170,14 @@ export class BallController extends Component {
         return false;
     }
 
+    /** Dừng bóng và phát event ghi điểm. */
     private emitBallOut(scorer: PaddleSide): void {
         this.playing = false;
         const payload: BallOutPayload = { scorer };
         this.node.emit(GAME_EVENTS.BALL_OUT, payload);
     }
 
+    /** Va chạm vợt — tính góc bật và emit paddle-hit. */
     private resolvePaddleCollision(side: PaddleSide, paddle: PaddleBase, directionX: number): void {
         const movingTowardPaddle = directionX > 0
             ? this.velocity.x < 0
@@ -157,7 +193,9 @@ export class BallController extends Component {
 
         const hitOffset = (this.tempPosition.y - paddle.getCenterY()) / paddle.getHalfHeight();
         const clampedOffset = Math.min(Math.max(hitOffset, -1), 1);
-        const angleRad = (clampedOffset * this.maxBounceAngleDeg * Math.PI) / 180;
+        const jitterDeg = (Math.random() * 2 - 1) * this.bounceAngleJitterDeg;
+        const angleDeg = clampedOffset * this.maxBounceAngleDeg + jitterDeg;
+        const angleRad = (angleDeg * Math.PI) / 180;
         const launchSpeed = Math.hypot(this.velocity.x, this.velocity.y) || this.speed;
 
         this.velocity.x = Math.cos(angleRad) * launchSpeed * directionX;

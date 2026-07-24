@@ -36,7 +36,7 @@ Một đoạn mô tả *tại sao* cần tính năng này và giá trị với p
 - [ ] 
 - [ ] 
 
-> Sau khi test Play mode OK: `npm run review:done -- Fxxx` hoặc chat `/da-kiem-tra-xong Fxxx`
+> Sau khi test Play mode OK: `npm run review:done -- Fxxx` hoặc chat `/checklist-done Fxxx`
 
 ## Thiết kế kỹ thuật
 

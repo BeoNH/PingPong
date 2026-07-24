@@ -14,6 +14,14 @@ Không ghi chi tiết implementation — chi tiết nằm trong spec `docs/featu
 
 | Ngày | Feature | Thay đổi | File / module |
 |------|---------|----------|---------------|
+| 2026-07-24 | F008 | change: Tạm ẩn UI chọn độ khó Menu; mặc định AI Vừa | MenuController.ts, Menu.scene |
+| 2026-07-24 | F010 | change: Xóa HUD legacy (MessageLabel, Restart/MenuButton); popup chỉ prefab | Game.scene |
+| 2026-07-24 | F010 | change: Human xác nhận Play mode / review | docs/features/F010-*.md |
+| 2026-07-24 | F010 | change: Popup prefab + UiPopup base + GameOverPopup/TutorialPopup con | UiPopup.ts, prefabs/ |
+| 2026-07-24 | F009 | change: Gộp CourtLayoutController → GameCanvasLayout trên Canvas | GameCanvasLayout.ts |
+| 2026-07-24 | F009 | add: UI sân (tường, vạch giữa) + layout ngang adaptive | GameCanvasLayout, Game.scene |
+| 2026-07-24 | F008 | fix: Delay serveLaunchDelay trước launch — bóng hiện tĩnh tại điểm giao | GameManager.ts |
+| 2026-07-24 | F007 | change: Tạm dừng — chờ file audio (code skeleton giữ) | docs/features/F007-*.md |
 | 2026-07-23 | F006 | change: Human xác nhận Play mode / review | docs/features/F006-*.md |
 | 2026-07-23 | F006 | fix: Menu scene thêm Camera + wire Canvas (UI hiển thị) | Menu.scene |
 | 2026-07-23 | F005 | change: Human xác nhận Play mode / review | docs/features/F005-*.md |

@@ -1,0 +1,37 @@
+---
+description: Kiểm tra thêm/xóa script — tránh file thừa hoặc đặt sai chỗ
+globs: assets/scripts/**/*.ts
+alwaysApply: false
+---
+
+# Kiểm kê `assets/scripts/`
+
+**Tra cứu:** cây thư mục & module map → `docs/03-ARCHITECTURE.md`, `docs/01-MODULES.md`.
+
+## Trước khi tạo file mới
+
+1. **Có thể gộp vào file hiện có không?** Logic nhỏ → component/manager liên quan; hằng event/state → `GameEvents.ts`; tên scene → `SceneNames.ts`; hành vi paddle chung → `PaddleBase.ts`.
+2. **File có đúng loại không?**
+   - **Component** (`@ccclass`, gắn scene/prefab): đặt root `assets/scripts/`, một class chính/file, tên file = tên class.
+   - **Util thuần** (không `@ccclass`, export hàm/const): chỉ `assets/scripts/utils/`.
+   - **Không tạo** file chung mơ hồ: `Helper.ts`, `Utils.ts`, `Common.ts`, `Manager2.ts`.
+3. **Module mới?** Phải khớp bảng module trong `docs/01-MODULES.md` hoặc spec feature đang làm — không thêm script “phòng hờ”.
+
+## Trước khi giữ / xóa file
+
+Coi file **thừa** nếu **cả hai** điều kiện:
+
+- Không có `import` từ file `.ts` khác trong `assets/`
+- Không được gắn trên node scene/prefab (tìm `@ccclass('TênClass')` hoặc tên file trong `assets/scenes/`, `assets/**/*.prefab`)
+
+Khi xóa: sync docs theo rule `docs-workflow.mdc`.
+
+## Anti-pattern (từ chối trừ khi spec nói rõ)
+
+| ❌ Tránh | ✅ Thay bằng |
+|---------|-------------|
+| Manager trùng vai trò `GameManager` | Mở rộng `GameManager` hoặc component con |
+| Singleton global ngoài scene | Event + `@property` inject |
+| Copy logic paddle player/AI | Kế thừa / mở rộng `PaddleBase` |
+| File util có `@ccclass` | Component ở root; util không Component |
+| Script chỉ dùng 1 lần, 3 dòng | Inline vào caller |

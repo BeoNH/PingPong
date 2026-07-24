@@ -22,22 +22,20 @@ Không tạo hoặc sửa file trong: `library/`, `temp/`, `local/`, `build/`, `
 - Chỉ dùng API **Cocos Creator 3.x** (`import { ... } from 'cc'`), không dùng API 2.x.
 - Không tự bịa API; nếu không chắc, kiểm tra docs hoặc hỏi user.
 
-## Skill & rules
+## Rules & skill (tra cứu, không lặp nội dung)
 
-- Chuẩn TheOne: đọc `.cursor/skills/theone-cocos-standards/SKILL.md` khi viết/review code TypeScript.
-- Chi tiết sâu: `references/` trong skill — chỉ mở file cần thiết.
-- Rule `cocos-typescript.mdc` bật khi làm việc với `assets/**/*.ts`.
-
-## Docs & workflow
-
-- Luồng tính năng: **Spec → Plan → Implement → Sync docs → Review** — chi tiết `docs/WORKFLOW.md`
-- Spec tính năng: `docs/features/Fxxx-*.md` (template: `docs/features/_template.md`)
-- Sau implement: cập nhật `docs/01-MODULES.md`, `docs/02-SCENES.md`, `docs/04-CHANGELOG.md`
+| Nhu cầu | Nguồn |
+|---------|-------|
+| Workflow tính năng & sync docs | `docs-workflow.mdc` · `docs/WORKFLOW.md` |
+| Lệnh `/checklist-done` | `checklist-done.mdc` · `.cursor/commands/checklist-done.md` |
+| Checklist TypeScript Cocos | `cocos-typescript.mdc` (glob `assets/**/*.ts`) |
+| Inspector tooltip + JSDoc | `cocos-inspector-docs.mdc` (glob `assets/**/*.ts`) |
+| Thêm/xóa script | `scripts-inventory.mdc` (glob `assets/scripts/**/*.ts`) |
+| Chuẩn TheOne (chi tiết sâu) | skill `theone-cocos-standards` — chỉ đọc khi viết/review TS |
 
 ## Nguyên tắc làm việc
 
-- Giữ diff nhỏ, tập trung đúng yêu cầu
-- Khớp convention và style code hiện có trong repo
+- Giữ diff nhỏ, khớp convention repo hiện có
 - Chỉ commit khi được yêu cầu rõ ràng
 - Trả lời bằng tiếng Việt trừ khi user yêu cầu ngôn ngữ khác
-- **Không** chạy `@lobehub/market-cli` — project không dùng LobeHub CLI
+- **Không** chạy `@lobehub/market-cli`

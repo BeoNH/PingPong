@@ -1,17 +1,16 @@
 ---
-description: Lệnh /da-kiem-tra-xong — tự tick review Play mode trong docs sau khi Human test xong
+description: Lệnh /checklist-done — tick review Play mode trong docs sau khi Human test xong
 alwaysApply: true
 ---
 
-# Lệnh xác nhận review — `/da-kiem-tra-xong`
+# Lệnh xác nhận review — `/checklist-done`
 
-Khi user gửi **một trong các câu/lệnh sau**, coi là đã test Play mode xong và **chạy script** (không tick tay từng checkbox):
+Slash command: `.cursor/commands/checklist-done.md` (gõ `/` trong chat để chọn).
 
-- `/da-kiem-tra-xong`
-- `/da kiem tra xong`
-- `/review-done`
+Khi user gửi **`/checklist-done`** (hoặc alias cũ bên dưới), coi là đã test Play mode xong và **chạy script** (không tick tay từng checkbox):
 
-Có thể kèm feature ID: `/da-kiem-tra-xong F001` hoặc `/review-done F002`.
+- `/checklist-done` · `/checklist-done F001`
+- Alias cũ (vẫn chấp nhận): `/da-kiem-tra-xong` · `/review-done`
 
 ## Agent phải làm
 

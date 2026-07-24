@@ -121,7 +121,7 @@ Sau khi test Play mode OK trong Editor, chạy **một trong hai cách**:
 | Cách | Lệnh |
 |------|------|
 | Terminal | `npm run review:done -- F001` |
-| Chat Cursor | `/da-kiem-tra-xong` hoặc `/da-kiem-tra-xong F001` |
+| Chat Cursor | `/checklist-done` hoặc `/checklist-done F001` (gõ `/` → chọn lệnh) |
 
 Script `scripts/mark-review-done.mjs` tự cập nhật spec, checklist scene, CHANGELOG. Bỏ `F001` để tự tìm feature đang `in-progress`.
 

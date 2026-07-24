@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Docs & workflow
 
-Chi tiết: `docs/WORKFLOW.md`
+Chi tiết workflow: `docs/WORKFLOW.md` · xác nhận review Play mode: rule `checklist-done.mdc` · lệnh `/checklist-done`.
 
 ## Trước khi code tính năng
 
