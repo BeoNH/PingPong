@@ -1,16 +1,11 @@
 import { _decorator, Component, Sprite, UITransform, Vec3 } from 'cc';
+import { COURT_BOUNDS } from './GameType';
 import { applyDefaultSpriteFrame } from './utils/ApplyDefaultSpriteFrame';
 
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 @ccclass('PaddleBase')
 export class PaddleBase extends Component {
-    @property
-    protected courtBottom = -280;
-
-    @property
-    protected courtTop = 280;
-
     protected readonly tempPosition: Vec3 = new Vec3();
     protected halfHeight = 0;
 
@@ -56,8 +51,8 @@ export class PaddleBase extends Component {
     }
 
     protected applyClampedY(targetY: number): void {
-        const minY = this.courtBottom + this.halfHeight;
-        const maxY = this.courtTop - this.halfHeight;
+        const minY = COURT_BOUNDS.bottom + this.halfHeight;
+        const maxY = COURT_BOUNDS.top - this.halfHeight;
         const clampedY = Math.min(Math.max(targetY, minY), maxY);
 
         this.node.getPosition(this.tempPosition);
@@ -69,12 +64,5 @@ export class PaddleBase extends Component {
         this.node.getPosition(this.tempPosition);
         this.tempPosition.y = 0;
         this.applyClampedY(this.tempPosition.y);
-    }
-
-    /** Cập nhật biên dọc khi canvas đổi kích thước. */
-    public applyCourtBounds(bottom: number, top: number): void {
-        this.courtBottom = bottom;
-        this.courtTop = top;
-        this.applyClampedY(this.node.position.y);
     }
 }

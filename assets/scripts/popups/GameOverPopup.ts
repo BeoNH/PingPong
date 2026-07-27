@@ -1,5 +1,5 @@
 import { _decorator, Button, Label } from 'cc';
-import { type PaddleSide } from '../GameEvents';
+import { type PaddleSide } from '../GameType';
 import { UiPopup } from './UiPopup';
 
 const { ccclass, property } = _decorator;

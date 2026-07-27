@@ -10,7 +10,7 @@ alwaysApply: false
 
 ## Trước khi tạo file mới
 
-1. **Có thể gộp vào file hiện có không?** Logic nhỏ → component/manager liên quan; hằng event/state → `GameEvents.ts`; tên scene → `SceneNames.ts`; hành vi paddle chung → `PaddleBase.ts`.
+1. **Có thể gộp vào file hiện có không?** Logic nhỏ → component/manager liên quan; hằng event → `GameEvents.ts`; types/hằng gameplay → `GameType.ts`; hành vi paddle chung → `PaddleBase.ts`.
 2. **File có đúng loại không?**
    - **Component** (`@ccclass`, gắn scene/prefab): đặt root `assets/scripts/`, một class chính/file, tên file = tên class.
    - **Util thuần** (không `@ccclass`, export hàm/const): chỉ `assets/scripts/utils/`.

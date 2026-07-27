@@ -1,11 +1,15 @@
-import { _decorator, Component, Node, Vec3 } from 'cc';
+import { _decorator, Animation, Component, Node, Vec3 } from 'cc';
 import { AiPaddle } from './AiPaddle';
 import { BallController } from './BallController';
-import { GAME_EVENTS, type BallOutPayload, GameState, type MatchEndedPayload } from './GameEvents';
+import { GAME_EVENTS } from './GameEvents';
+import { consumeGameIntroOnLoad } from './GameSession';
+import { SERVE_DIR, type BallOutPayload, GameState, type MatchEndedPayload, type ServeDirection } from './GameType';
 import { PlayerPaddle } from './PlayerPaddle';
 import { ScoreManager } from './ScoreManager';
 
 const { ccclass, property } = _decorator;
+
+const HAND_ANIM_CLIP = 'hand';
 
 /** Điều phối trạng thái trận: serve → rally → điểm → game over. */
 @ccclass('GameManager')
@@ -28,14 +32,17 @@ export class GameManager extends Component {
     @property({ type: Node, tooltip: 'Điểm giao bóng (AI)' })
     private readonly aiServeAnchor: Node | null = null;
 
+    @property({ type: Node, tooltip: 'Tay hướng dẫn intro (Canvas/hand)' })
+    private readonly handNode: Node | null = null;
+
     @property({ tooltip: 'Chờ giữa các điểm (s)' })
     private pointResetDelay = 1;
 
     @property({ tooltip: 'Chờ trước khi giao bóng (s)' })
     private serveLaunchDelay = 0.5;
 
-    private state: GameState = GameState.Ready;
-    private serveDirectionX = 1;
+    private state: GameState = GameState.Serving;
+    private serveDirectionX: ServeDirection = SERVE_DIR.PLAYER;
     private pendingPointReset = false;
     private readonly servePosition: Vec3 = new Vec3();
 
@@ -63,30 +70,31 @@ export class GameManager extends Component {
         if (!this.aiServeAnchor) {
             throw new Error('GameManager: aiServeAnchor is required');
         }
+
+        if (!this.handNode) {
+            throw new Error('GameManager: handNode is required');
+        }
     }
 
     protected onEnable(): void {
         this.ballController!.node.on(GAME_EVENTS.BALL_OUT, this.onBallOut, this);
+        this.node.on(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
     }
 
     protected onDisable(): void {
         this.ballController!.node.off(GAME_EVENTS.BALL_OUT, this.onBallOut, this);
+        this.node.off(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
     }
 
     protected start(): void {
-        this.resetRoundPositions();
-        this.enterServing();
-        this.scheduleLaunchRally();
-    }
+        if (consumeGameIntroOnLoad()) {
+            this.beginIntroFromMenu();
+            return;
+        }
 
-    public isPlaying(): boolean {
-        return this.state === GameState.Playing;
-    }
-
-    public getState(): GameState {
-        return this.state;
+        this.prepareNormalMatchStart();
     }
 
     /** Bắt đầu trận mới sau GameOver. */
@@ -98,11 +106,9 @@ export class GameManager extends Component {
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
         this.pendingPointReset = false;
-        this.serveDirectionX = 1;
+        this.serveDirectionX = SERVE_DIR.PLAYER;
         this.scoreManager!.resetScores();
-        this.resetRoundPositions();
-        this.enterServing();
-        this.scheduleLaunchRally();
+        this.prepareNormalMatchStart();
     }
 
     /** Giao bóng và bắt đầu rally. */
@@ -114,7 +120,10 @@ export class GameManager extends Component {
         this.state = GameState.Playing;
         this.ballController!.setPlaying(true);
         this.placeBallAtServeAnchor();
-        this.ballController!.launch(this.serveDirectionX, (Math.random() - 0.5) * 0.4);
+        this.ballController!.launch(
+            this.serveDirectionX,
+            (Math.random() - 0.5) * 0.4,
+        );
     }
 
     /** Xử lý bóng ra biên — ghi điểm, ẩn bóng, serve lại. */
@@ -126,8 +135,8 @@ export class GameManager extends Component {
         this.state = GameState.PointScored;
         this.ballController!.setPlaying(false);
         this.ballController!.setVisible(false);
-        this.serveDirectionX = payload.scorer === 'player' ? 1 : -1;
-        this.resetRoundPositions();
+        this.serveDirectionX = payload.scorer === 'player' ? SERVE_DIR.PLAYER : SERVE_DIR.AI;
+        this.prepareAfterPoint();
 
         const matchEnded = this.scoreManager!.addPoint(payload.scorer);
         if (matchEnded) {
@@ -180,11 +189,16 @@ export class GameManager extends Component {
         this.placeBallAtServeAnchor();
     }
 
-    /** Reset vị trí vợt và bóng mỗi điểm. */
-    private resetRoundPositions(): void {
+    /** Reset vị trí vợt và bóng khi bắt đầu trận mới. */
+    private resetMatchPositions(): void {
         this.playerPaddle!.resetToCenter();
         this.aiPaddle!.resetForServe();
         this.placeBallAtServeAnchor();
+    }
+
+    /** Sau mỗi điểm — chỉ reset AI; vợt player giữ nguyên vị trí. */
+    private prepareAfterPoint(): void {
+        this.aiPaddle!.resetForServe();
     }
 
     private placeBallAtServeAnchor(): void {
@@ -193,6 +207,60 @@ export class GameManager extends Component {
     }
 
     private getActiveServeAnchor(): Node {
-        return this.serveDirectionX > 0 ? this.playerServeAnchor! : this.aiServeAnchor!;
+        return this.serveDirectionX === SERVE_DIR.PLAYER
+            ? this.playerServeAnchor!
+            : this.aiServeAnchor!;
+    }
+
+    /** Vào Game từ Menu — ẩn AI, hiện tay hướng dẫn. */
+    private beginIntroFromMenu(): void {
+        this.state = GameState.Intro;
+        this.resetMatchPositions();
+        this.aiPaddle!.node.active = false;
+        this.ballController!.setPlaying(false);
+        this.ballController!.setVisible(false);
+        this.showHandHint();
+    }
+
+    /** Người chơi di chuyển vợt — kết thúc intro, giao bóng từ AI. */
+    private onPlayerPaddleInput(): void {
+        if (this.state !== GameState.Intro) {
+            return;
+        }
+
+        this.completeIntroFromMenu();
+    }
+
+    private completeIntroFromMenu(): void {
+        this.hideHandHint();
+        this.aiPaddle!.node.active = true;
+        this.serveDirectionX = SERVE_DIR.AI;
+        this.enterServing();
+        this.scheduleLaunchRally();
+    }
+
+    private prepareNormalMatchStart(): void {
+        this.hideHandHint();
+        this.aiPaddle!.node.active = true;
+        this.resetMatchPositions();
+        this.enterServing();
+        this.scheduleLaunchRally();
+    }
+
+    private showHandHint(): void {
+        const animation = this.handNode!.getComponent(Animation);
+
+        if (!animation) {
+            throw new Error('GameManager.showHandHint: hand requires Animation');
+        }
+
+        this.handNode!.active = true;
+        animation.play(HAND_ANIM_CLIP);
+    }
+
+    private hideHandHint(): void {
+        const animation = this.handNode!.getComponent(Animation);
+        animation?.stop();
+        this.handNode!.active = false;
     }
 }

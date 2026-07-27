@@ -1,6 +1,7 @@
 import { _decorator, AudioClip, AudioSource, Component } from 'cc';
 import { BallController } from './BallController';
-import { GAME_EVENTS, type MatchEndedPayload, type ScoreChangedPayload } from './GameEvents';
+import { GAME_EVENTS } from './GameEvents';
+import { type MatchEndedPayload, type ScoreChangedPayload } from './GameType';
 import { GameManager } from './GameManager';
 import { ScoreManager } from './ScoreManager';
 

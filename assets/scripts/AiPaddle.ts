@@ -4,6 +4,7 @@ import {
     getAiDifficultyPreset,
     getSelectedAiDifficulty,
 } from './AiDifficulty';
+import { COURT_BOUNDS } from './GameType';
 import { PaddleBase } from './PaddleBase';
 
 const { ccclass, property } = _decorator;
@@ -23,6 +24,7 @@ export class AiPaddle extends PaddleBase {
     private chaseThresholdX = 140;
     private targetY = 0;
     private reactionTimer = 0;
+    private idleDirection = 1;
     private ballMotion: BallMotionReader | null = null;
 
     protected onLoad(): void {
@@ -45,7 +47,7 @@ export class AiPaddle extends PaddleBase {
 
     protected update(deltaTime: number): void {
         if (!this.shouldChaseBall()) {
-            this.reactionTimer = 0;
+            this.idlePatrol(deltaTime);
             return;
         }
 
@@ -72,6 +74,7 @@ export class AiPaddle extends PaddleBase {
     public resetForServe(): void {
         this.targetY = 0;
         this.reactionTimer = 0;
+        this.idleDirection = Math.random() < 0.5 ? -1 : 1;
         this.resetToCenter();
     }
 
@@ -80,11 +83,32 @@ export class AiPaddle extends PaddleBase {
             return false;
         }
 
-        if (this.ballMotion!.getVelocityX() <= 0) {
+        if (this.ballMotion!.getVelocityX() >= 0) {
             return false;
         }
 
-        return this.ballNode!.position.x >= this.chaseThresholdX;
+        return this.ballNode!.position.x <= -this.chaseThresholdX;
+    }
+
+    /** Lúc chờ bóng — di chuyển lên/xuống trong biên sân. */
+    private idlePatrol(deltaTime: number): void {
+        this.reactionTimer = 0;
+
+        const minY = COURT_BOUNDS.bottom + this.halfHeight;
+        const maxY = COURT_BOUNDS.top - this.halfHeight;
+        const currentY = this.node.position.y;
+        const step = this.idleDirection * this.moveSpeed * 0.45 * deltaTime;
+        let nextY = currentY + step;
+
+        if (nextY >= maxY) {
+            nextY = maxY;
+            this.idleDirection = -1;
+        } else if (nextY <= minY) {
+            nextY = minY;
+            this.idleDirection = 1;
+        }
+
+        this.applyClampedY(nextY);
     }
 
     private getChaseTargetY(): number {

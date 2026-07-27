@@ -23,16 +23,37 @@ Menu → Game → (GameOver) → Menu | Chơi lại
 
 ```
 Menu (Scene)
-└── Canvas (1280×720)
-    ├── TitleLabel       [Ping Pong]
-    ├── PlayButton       [Chơi → load Game]
+└── Canvas (1280×720, Widget + MenuController)
+    ├── Camera
+    ├── BG (scale 2×)                    [nền + khung sân — sprite Goal atlas]
+    │   ├── base                         [Sprite nền]
+    │   ├── Frame                        [4 góc: frame_0002..0005]
+    │   ├── Decor                        [trang trí — Flower + frame_* (bỏ qua chi tiết)]
+    │   └── Boder                        [tường trên/dưới + biên trái/phải]
+    ├── Title
+    │   ├── bg                           [Sprite]
+    │   ├── Label                        [Ping Pong]
+    │   └── frame_0022                   [Sprite trang trí]
+    ├── DifficultyLabel                  [*(ẩn)* — mặc định AI Vừa]
+    ├── PlayButton                       [Chơi → load Game]
+    │   ├── frame_0012 / frame_0015
     │   └── Label
-    ├── HelpButton       [Hướng dẫn → spawn TutorialPopup prefab]
+    ├── MediumButton *(ẩn)*
     │   └── Label
-    ├── *(ẩn)* EasyButton / MediumButton / HardButton / DifficultyLabel — mặc định AI Vừa
+    ├── HardButton *(ẩn)*
+    │   └── Label
+    ├── EasyButton *(ẩn)*
+    │   └── Label
+    ├── HelpButton                       [Hướng dẫn → spawn TutorialPopup]
+    │   ├── frame_0012 / frame_0018 / frame_0021
+    │   └── Label
+    ├── SettingButton                    [UI trang trí — chưa wire script]
+    │   ├── frame_0012 / frame_0018 / frame_0021
+    │   └── Label
+    └── PopupRoot                        [popup spawn runtime]
 ```
 
-Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `PopupRoot` nếu có).
+Popup spawn runtime: `UiPopup` tự tìm `Canvas/PopupRoot` (fallback `Canvas`).
 
 ### Wire reference (Menu)
 
@@ -52,23 +73,29 @@ Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `Po
 Game (Scene)
 └── Canvas (Widget full screen + GameCanvasLayout)
     ├── Camera
-    ├── Playfield          [nền + tường — render dưới gameplay]
-    │   ├── Background
-    │   ├── TopWall
-    │   ├── CenterDivider
-    │   └── BottomWall
-    ├── PlayerPaddle
-    ├── Managers           [InputHandler, GameManager, ScoreManager, AudioManager]
+    ├── BG (scale 2×)                    [nền + khung sân — render dưới gameplay]
+    │   ├── base                         [Sprite nền]
+    │   ├── Frame                        [4 góc: frame_0002..0005]
+    │   ├── Decor                        [trang trí — Flower + frame_* (bỏ qua chi tiết)]
+    │   └── Boder                        [tường trên/dưới + biên trái/phải]
+    ├── PlayerPaddle                     [PlayerPaddle]
+    ├── Managers                         [InputHandler, GameManager, ScoreManager, AudioManager]
     ├── ServeAnchor
-    ├── Ball
-    ├── AiPaddle
-    ├── HUD                [HudController]
-    │   ├── PlayerScoreLabel
-    │   └── AiScoreLabel
-    └── AiServeAnchor
+    ├── Ball                             [BallController, Animation]
+    ├── AiPaddle                         [AiPaddle]
+    ├── HUD                              [HudController]
+    │   ├── PlayerScoreLabel             [Label — điểm người chơi]
+    │   ├── AiScoreLabel                 [Label — điểm AI]
+    │   ├── AiScore                      [Sprite khung điểm AI]
+    │   └── PlayerScore                  [Sprite khung điểm người chơi]
+    ├── AiServeAnchor
+    ├── hand                             [Animation clip `hand` — intro từ Menu]
+    └── PopupRoot                        [popup spawn runtime]
 ```
 
-Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `PopupRoot` nếu có).
+> **Layout gameplay:** Player phải (x≈450), AI trái (x≈-450). Biên bóng X ±490, Y ±240. Ghi điểm chỉ qua khung goal Y ±160 ở hai biên; ngoài khung bóng nảy cạnh.
+
+Popup spawn runtime: `UiPopup` tự tìm `Canvas/PopupRoot` (fallback `Canvas`).
 
 ### Wire reference (Inspector)
 
@@ -80,6 +107,7 @@ Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `Po
 | `GameManager` | `aiServeAnchor` | `Canvas/AiServeAnchor` |
 | `GameManager` | `playerPaddle` | `Canvas/PlayerPaddle` → PlayerPaddle |
 | `GameManager` | `aiPaddle` | `Canvas/AiPaddle` → AiPaddle |
+| `GameManager` | `handNode` | `Canvas/hand` |
 | `InputHandler` | `playerPaddle` | `Canvas/PlayerPaddle` → PlayerPaddle |
 | `InputHandler` | `touchArea` | `Canvas` |
 | `BallController` | `playerPaddle` | `Canvas/PlayerPaddle` → PlayerPaddle |
@@ -90,7 +118,7 @@ Popup spawn runtime: `instantiate` prefab → gắn dưới `Canvas` (hoặc `Po
 | `HudController` | `scoreManager` | `Canvas/Managers` → ScoreManager |
 | `HudController` | `gameManager` | `Canvas/Managers` → GameManager |
 | `HudController` | `gameOverPopupPrefab` | `assets/prefabs/GameOverPopup.prefab` |
-| `GameCanvasLayout` | *(Canvas)* | Tự tìm `Playfield/*`, `Ball`, paddles, serve anchors — chỉ config số trên Inspector |
+| `GameCanvasLayout` | *(Canvas)* | Biên bóng cố định, vị trí vợt/serve — player phải, AI trái |
 | `AudioManager` | `ballController` | `Canvas/Ball` → BallController |
 | `AudioManager` | `scoreManager` | `Canvas/Managers` → ScoreManager |
 | `AudioManager` | `gameManager` | `Canvas/Managers` → GameManager |

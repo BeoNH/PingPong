@@ -14,6 +14,12 @@ Không ghi chi tiết implementation — chi tiết nằm trong spec `docs/featu
 
 | Ngày | Feature | Thay đổi | File / module |
 |------|---------|----------|---------------|
+| 2026-07-27 | F001 | add: Intro vào Game từ Menu — ẩn AI, anim `hand`, giao bóng sau input player | GameManager, GameSession, InputHandler, MenuController |
+| 2026-07-27 | F001 | change: Nới biên sân ngang COURT_BOUNDS ±560 (bóng bay thêm trước khi ghi điểm) | GameType.ts |
+| 2026-07-27 | F004 | change: Không reset vị trí vợt player sau mỗi điểm — chỉ lúc bắt đầu/restart trận | GameManager.ts |
+| 2026-07-27 | — | fix: TS strict — bỏ `as const` mutable fields; dọn API/biên thừa | GameType, BallController, GameCanvasLayout |
+| 2026-07-27 | F001 | change: Player phải / AI trái; biên bóng ±490×±240; goal Y ±160 nảy cạnh | BallController, GameCanvasLayout, AiPaddle, GameManager |
+| 2026-07-27 | — | change: Cập nhật node tree Game/Menu — `Playfield` → `BG`, thêm PopupRoot & HUD score sprite | docs/02-SCENES.md |
 | 2026-07-24 | F008 | change: Tạm ẩn UI chọn độ khó Menu; mặc định AI Vừa | MenuController.ts, Menu.scene |
 | 2026-07-24 | F010 | change: Xóa HUD legacy (MessageLabel, Restart/MenuButton); popup chỉ prefab | Game.scene |
 | 2026-07-24 | F010 | change: Human xác nhận Play mode / review | docs/features/F010-*.md |

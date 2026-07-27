@@ -10,6 +10,7 @@ import {
     UITransform,
     Vec3,
 } from 'cc';
+import { GAME_EVENTS } from './GameEvents';
 import { PlayerPaddle } from './PlayerPaddle';
 
 const { ccclass, property } = _decorator;
@@ -39,22 +40,24 @@ export class InputHandler extends Component {
     protected onEnable(): void {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-        this.touchArea.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.touchArea!.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     }
 
     protected onDisable(): void {
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
-        this.touchArea.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.touchArea!.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     }
 
     protected update(deltaTime: number): void {
         if (this.moveUp) {
             this.playerPaddle!.moveByDirection(1, deltaTime);
+            this.notifyPlayerInput();
         }
 
         if (this.moveDown) {
             this.playerPaddle!.moveByDirection(-1, deltaTime);
+            this.notifyPlayerInput();
         }
     }
 
@@ -63,10 +66,12 @@ export class InputHandler extends Component {
             case KeyCode.KEY_W:
             case KeyCode.ARROW_UP:
                 this.moveUp = true;
+                this.notifyPlayerInput();
                 break;
             case KeyCode.KEY_S:
             case KeyCode.ARROW_DOWN:
                 this.moveDown = true;
+                this.notifyPlayerInput();
                 break;
             default:
                 break;
@@ -99,5 +104,10 @@ export class InputHandler extends Component {
         this.tempLocalPos.set(touchLocation.x, touchLocation.y, 0);
         uiTransform.convertToNodeSpaceAR(this.tempLocalPos, this.tempLocalPos);
         this.playerPaddle!.setTargetY(this.tempLocalPos.y);
+        this.notifyPlayerInput();
+    }
+
+    private notifyPlayerInput(): void {
+        this.node.emit(GAME_EVENTS.PLAYER_PADDLE_INPUT);
     }
 }

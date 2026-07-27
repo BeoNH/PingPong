@@ -1,5 +1,6 @@
 import { _decorator, Component } from 'cc';
-import { GAME_EVENTS, type PaddleSide, type ScoreChangedPayload } from './GameEvents';
+import { GAME_EVENTS } from './GameEvents';
+import { type PaddleSide, type ScoreChangedPayload } from './GameType';
 
 const { ccclass, property } = _decorator;
 

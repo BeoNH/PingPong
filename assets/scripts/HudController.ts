@@ -1,9 +1,9 @@
 import { _decorator, Component, instantiate, Label, Prefab } from 'cc';
 import { GameOverPopup } from './popups/GameOverPopup';
-import { GAME_EVENTS, type MatchEndedPayload, type ScoreChangedPayload } from './GameEvents';
+import { GAME_EVENTS } from './GameEvents';
 import { GameManager } from './GameManager';
 import { ScoreManager } from './ScoreManager';
-import { SCENE_NAMES } from './SceneNames';
+import { SCENE_NAMES, type MatchEndedPayload, type ScoreChangedPayload } from './GameType';
 import { loadScene } from './utils/SceneLoader';
 
 const { ccclass, property } = _decorator;

@@ -1,4 +1,5 @@
 import { _decorator, Canvas, Component, director, Node, tween, UIOpacity, Vec3, warn } from 'cc';
+import { SCENE_NODE_NAMES } from '../GameType';
 
 const { ccclass, property } = _decorator;
 
@@ -167,7 +168,7 @@ export class UiPopup extends Component {
             return null;
         }
 
-        this.cachedPopupRoot = canvas.node.getChildByName('PopupRoot') ?? canvas.node;
+        this.cachedPopupRoot = canvas.node.getChildByName(SCENE_NODE_NAMES.POPUP_ROOT) ?? canvas.node;
 
         return this.cachedPopupRoot;
     }

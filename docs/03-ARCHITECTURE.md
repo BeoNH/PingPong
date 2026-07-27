@@ -58,8 +58,7 @@ flowchart TB
 ## State machine (GameManager)
 
 ```
-Ready
-  → Serving     (bóng ở vị trí serve, chờ input)
+Serving     (bóng ở vị trí serve, chờ launch)
   → Playing     (bóng di chuyển)
   → PointScored (pause ngắn, cập nhật điểm)
   → Serving | GameOver
@@ -82,7 +81,8 @@ Ready
 
 ```
 assets/scripts/
-├── GameEvents.ts
+├── GameType.ts          # Types, enums, hằng số gameplay
+├── GameEvents.ts        # Tên event (payload → GameType)
 ├── AiDifficulty.ts
 ├── GameManager.ts
 ├── BallController.ts
@@ -99,7 +99,6 @@ assets/scripts/
 ├── GameCanvasLayout.ts
 ├── MenuController.ts
 ├── AudioManager.ts
-├── SceneNames.ts
 └── utils/
     ├── ApplyDefaultSpriteFrame.ts
     └── SceneLoader.ts

@@ -1,13 +1,11 @@
 import { _decorator, Button, Component, instantiate, Label, Prefab } from 'cc';
 import { AiDifficultyLevel, setSelectedAiDifficulty } from './AiDifficulty';
-import { SCENE_NAMES } from './SceneNames';
+import { SCENE_NAMES, SHOW_DIFFICULTY_UI } from './GameType';
 import { TutorialPopup } from './popups/TutorialPopup';
+import { markGameEntryFromMenu } from './GameSession';
 import { loadScene } from './utils/SceneLoader';
 
 const { ccclass, property } = _decorator;
-
-/** Tạm ẩn UI chọn độ khó — mặc định Vừa. Bật lại khi cần F008 full. */
-const SHOW_DIFFICULTY_UI = false;
 
 /** Menu — chơi, hướng dẫn, spawn popup từ prefab. */
 @ccclass('MenuController')
@@ -76,6 +74,7 @@ export class MenuController extends Component {
     }
 
     private onPlayClicked(): void {
+        markGameEntryFromMenu();
         loadScene(SCENE_NAMES.GAME);
     }
 

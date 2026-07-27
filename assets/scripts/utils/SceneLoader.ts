@@ -1,5 +1,5 @@
 import { director } from 'cc';
-import type { SceneName } from '../SceneNames';
+import type { SceneName } from '../GameType';
 
 export function loadScene(sceneName: SceneName): void {
     director.loadScene(sceneName, (error) => {

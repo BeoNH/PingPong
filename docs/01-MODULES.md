@@ -24,6 +24,7 @@ Danh sách module logic của dự án PingPong. Cập nhật trạng thái mỗ
 | M02 | `assets/scripts/BallController.ts` | Component |
 | M03 | `assets/scripts/PlayerPaddle.ts` | Component |
 | M04 | `assets/scripts/AiDifficulty.ts` | Hằng preset + state độ khó |
+| — | `assets/scripts/GameType.ts` | Types, enums, hằng số gameplay dùng chung |
 | M04 | `assets/scripts/AiPaddle.ts` | Component |
 | M05 | `assets/scripts/ScoreManager.ts` | Component |
 | M06 | `assets/scripts/InputHandler.ts` | Component / util |
