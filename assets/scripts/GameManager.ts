@@ -3,6 +3,7 @@ import { AiPaddle } from './AiPaddle';
 import { BallController } from './BallController';
 import { GAME_EVENTS } from './GameEvents';
 import { consumeGameIntroOnLoad } from './GameSession';
+import { GoalCelebration } from './GoalCelebration';
 import { SERVE_DIR, type BallOutPayload, GameState, type MatchEndedPayload, type ServeDirection } from './GameType';
 import { PlayerPaddle } from './PlayerPaddle';
 import { ScoreManager } from './ScoreManager';
@@ -35,8 +36,8 @@ export class GameManager extends Component {
     @property({ type: Node, tooltip: 'Tay hướng dẫn intro (Canvas/hand)' })
     private readonly handNode: Node | null = null;
 
-    @property({ tooltip: 'Chờ giữa các điểm (s)' })
-    private pointResetDelay = 1;
+    @property({ type: GoalCelebration, tooltip: 'Effect GOAL khi ghi bàn' })
+    private goalCelebration: GoalCelebration | null = null;
 
     @property({ tooltip: 'Chờ trước khi giao bóng (s)' })
     private serveLaunchDelay = 0.5;
@@ -74,6 +75,21 @@ export class GameManager extends Component {
         if (!this.handNode) {
             throw new Error('GameManager: handNode is required');
         }
+
+        this.resolveGoalCelebration();
+    }
+
+    private resolveGoalCelebration(): void {
+        if (this.goalCelebration) {
+            return;
+        }
+
+        const goalNode = this.node.parent?.getChildByName('goal') ?? null;
+        this.goalCelebration = goalNode?.getComponent(GoalCelebration) ?? null;
+
+        if (!this.goalCelebration) {
+            throw new Error('GameManager: Canvas/goal requires GoalCelebration component');
+        }
     }
 
     protected onEnable(): void {
@@ -86,9 +102,12 @@ export class GameManager extends Component {
         this.node.off(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
+        this.goalCelebration?.stop();
     }
 
     protected start(): void {
+        this.resolveGoalCelebration();
+
         if (consumeGameIntroOnLoad()) {
             this.beginIntroFromMenu();
             return;
@@ -105,6 +124,7 @@ export class GameManager extends Component {
 
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
+        this.goalCelebration?.stop();
         this.pendingPointReset = false;
         this.serveDirectionX = SERVE_DIR.PLAYER;
         this.scoreManager!.resetScores();
@@ -139,19 +159,21 @@ export class GameManager extends Component {
         this.prepareAfterPoint();
 
         const matchEnded = this.scoreManager!.addPoint(payload.scorer);
-        if (matchEnded) {
-            this.enterGameOver();
-            return;
-        }
-
         this.pendingPointReset = true;
-        this.scheduleOnce(this.continueAfterPoint, this.pointResetDelay);
+        this.goalCelebration!.play(() => {
+            this.pendingPointReset = false;
+
+            if (matchEnded) {
+                this.enterGameOver();
+                return;
+            }
+
+            this.continueAfterPoint();
+        });
     }
 
-    /** Tiếp tục sau delay giữa các điểm. */
+    /** Tiếp tục sau effect GOAL — serve lại. */
     private continueAfterPoint(): void {
-        this.pendingPointReset = false;
-
         if (this.state !== GameState.PointScored) {
             return;
         }

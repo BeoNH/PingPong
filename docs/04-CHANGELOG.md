@@ -14,7 +14,17 @@ Không ghi chi tiết implementation — chi tiết nằm trong spec `docs/featu
 
 | Ngày | Feature | Thay đổi | File / module |
 |------|---------|----------|---------------|
-| 2026-07-27 | F001 | add: Intro vào Game từ Menu — ẩn AI, anim `hand`, giao bóng sau input player | GameManager, GameSession, InputHandler, MenuController |
+| 2026-07-28 | Settings | change: ScreenShake dao động sin giảm dần — mượt hơn, va chạm liên tiếp refresh | ScreenShake.ts |
+| 2026-07-28 | Settings | add: SettingsPopup + ToggleSwitch + localStorage sound/effect + ScreenShake | SettingsPopup.ts, ToggleSwitch.ts, ScreenShake.ts, SettingsService.ts, MenuController.ts, BallController.ts, AudioManager.ts |
+| 2026-07-28 | F003 | fix: Goal tween chạy ngay + đưa goal lên trên — ổn định bàn đầu | GoalCelebration.ts |
+| 2026-07-28 | F003 | fix: GoalCelebration timeout + tween ổn định — tránh đơ sau ghi bàn | GoalCelebration.ts, GameManager.ts |
+| 2026-07-28 | F003 | add: Effect GOAL scale khi ghi bàn — chờ xong mới serve tiếp | GoalCelebration.ts, GameManager.ts |
+| 2026-07-28 | F010 | change: GameOverPopup dùng ảnh win/lose thay Label | GameOverPopup.ts |
+| 2026-07-28 | F001 | change: Effect khi nảy tường; cạnh trên/dưới vợt chỉ đẩy ra, không phản xạ | BallController.ts |
+| 2026-07-28 | F001 | fix: Khóa va chạm vợt + effect chỉ mặt trước — tránh spam cạnh trên/dưới | BallController.ts |
+| 2026-07-28 | F001 | fix: Effect chạm spawn cùng parent/layer bóng; tốc độ clip lăn theo vận tốc | BallController.ts |
+| 2026-07-28 | F001 | add: VFX anim trong BallController + PaddleBase (bóng/vợt/effect) | BallController.ts, PaddleBase.ts |
+| 2026-07-28 | F003 | change: Điểm HUD dùng `SpriteScoreDisplay` (sprite 0–9), bỏ Label | SpriteScoreDisplay.ts, HudController.ts |
 | 2026-07-27 | F001 | change: Nới biên sân ngang COURT_BOUNDS ±560 (bóng bay thêm trước khi ghi điểm) | GameType.ts |
 | 2026-07-27 | F004 | change: Không reset vị trí vợt player sau mỗi điểm — chỉ lúc bắt đầu/restart trận | GameManager.ts |
 | 2026-07-27 | — | fix: TS strict — bỏ `as const` mutable fields; dọn API/biên thừa | GameType, BallController, GameCanvasLayout |

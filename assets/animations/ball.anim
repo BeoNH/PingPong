@@ -70,27 +70,27 @@
     ],
     "_values": [
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@110dd",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@5d206",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@7ab29",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@9da3b",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@9ceb6",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@20326",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@c910d",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@e5f2f",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@f38f0",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@91d32",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@bec9e",
+        "__uuid__": "d0021598-6543-48e7-8ad0-4424855e49bb@91e15",
         "__expectedType__": "cc.SpriteFrame"
       }
     ]

@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, UITransform, Vec3 } from 'cc';
+import { _decorator, Animation, Component, Sprite, UITransform, Vec3 } from 'cc';
 import { COURT_BOUNDS } from './GameType';
 import { applyDefaultSpriteFrame } from './utils/ApplyDefaultSpriteFrame';
 
@@ -8,6 +8,9 @@ const { ccclass } = _decorator;
 export class PaddleBase extends Component {
     protected readonly tempPosition: Vec3 = new Vec3();
     protected halfHeight = 0;
+    private paddleAnimation: Animation | null = null;
+
+    private readonly hitClip = 'paddle';
 
     protected onLoad(): void {
         const uiTransform = this.node.getComponent(UITransform);
@@ -22,6 +25,18 @@ export class PaddleBase extends Component {
         if (sprite) {
             applyDefaultSpriteFrame(sprite);
         }
+
+        this.paddleAnimation = this.getComponent(Animation);
+    }
+
+    /** Phát anim chạm bóng một lần. */
+    public playHitAnimation(): void {
+        if (!this.paddleAnimation) {
+            return;
+        }
+
+        this.paddleAnimation.stop();
+        this.paddleAnimation.play(this.hitClip);
     }
 
     public getHalfHeight(): number {

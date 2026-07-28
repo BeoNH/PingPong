@@ -13,19 +13,19 @@ export interface AiDifficultyPreset {
 
 const AI_DIFFICULTY_PRESETS: Record<AiDifficultyLevel, AiDifficultyPreset> = {
     [AiDifficultyLevel.Easy]: {
-        moveSpeed: 240,
+        moveSpeed: 350,
         reactionDelay: 0.24,
         aimError: 90,
         chaseThresholdX: 220,
     },
     [AiDifficultyLevel.Medium]: {
-        moveSpeed: 320,
+        moveSpeed: 400,
         reactionDelay: 0.14,
         aimError: 60,
         chaseThresholdX: 140,
     },
     [AiDifficultyLevel.Hard]: {
-        moveSpeed: 380,
+        moveSpeed: 450,
         reactionDelay: 0.09,
         aimError: 40,
         chaseThresholdX: 90,

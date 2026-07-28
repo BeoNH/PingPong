@@ -4,6 +4,7 @@ import { GAME_EVENTS } from './GameEvents';
 import { type MatchEndedPayload, type ScoreChangedPayload } from './GameType';
 import { GameManager } from './GameManager';
 import { ScoreManager } from './ScoreManager';
+import { SettingsService } from './SettingsService';
 
 const { ccclass, property } = _decorator;
 
@@ -70,7 +71,7 @@ export class AudioManager extends Component {
     }
 
     private playClip(clip: AudioClip | null): void {
-        if (!clip || !this.audioSource) {
+        if (!SettingsService.isSoundEnabled() || !clip || !this.audioSource) {
             return;
         }
 

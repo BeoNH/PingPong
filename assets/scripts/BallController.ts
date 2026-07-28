@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, UITransform, Vec3 } from 'cc';
+import { _decorator, Animation, Component, instantiate, Node, Sprite, UITransform, Vec3 } from 'cc';
 import { GAME_EVENTS } from './GameEvents';
 import {
     COURT_BOUNDS,
@@ -10,6 +10,7 @@ import {
 import { AiPaddle } from './AiPaddle';
 import { PaddleBase } from './PaddleBase';
 import { PlayerPaddle } from './PlayerPaddle';
+import { ScreenShake } from './ScreenShake';
 import { applyDefaultSpriteFrame } from './utils/ApplyDefaultSpriteFrame';
 
 const { ccclass, property } = _decorator;
@@ -27,6 +28,12 @@ export class BallController extends Component {
     @property({ type: AiPaddle, tooltip: 'Vợt AI' })
     private readonly aiPaddle: AiPaddle | null = null;
 
+    @property({ type: Node, tooltip: 'Node mẫu effect chạm (ẩn trong scene)' })
+    private readonly effectTemplate: Node | null = null;
+
+    @property({ type: ScreenShake, tooltip: 'Rung Canvas khi va chạm' })
+    private screenShake: ScreenShake | null = null;
+
     @property({ tooltip: 'Tốc độ bóng ban đầu (px/s)' })
     private speed = 500;
 
@@ -42,12 +49,29 @@ export class BallController extends Component {
     @property({ tooltip: 'Lệch góc ngẫu nhiên (°)' })
     private bounceAngleJitterDeg = 10;
 
+    private readonly effectInsetPx = 20;
+
     private currentSpeed = 500;
 
     private readonly velocity: Vec3 = new Vec3();
     private readonly tempPosition: Vec3 = new Vec3();
     private halfWidth = 0;
     private halfHeight = 0;
+    private ballAnimation: Animation | null = null;
+
+    private readonly moveClip = 'ball';
+    private readonly effectClip = 'effect_0';
+    private readonly effectDuration = 0.37;
+
+    /** Chặn va chạm lặp khi bóng còn chồng lên vợt (cạnh trên/dưới dễ kích nhiều frame). */
+    private readonly paddleContactLocked: Record<PaddleSide, boolean> = {
+        ai: false,
+        player: false,
+    };
+
+    /** Khoảng cách tối thiểu giữa hai lần spawn effect (mọi nguồn). */
+    private effectCooldownLeft = 0;
+    private readonly minEffectIntervalSec = 0.1;
 
     protected onLoad(): void {
         if (!this.playerPaddle) {
@@ -71,6 +95,23 @@ export class BallController extends Component {
         if (sprite) {
             applyDefaultSpriteFrame(sprite);
         }
+
+        this.ballAnimation = this.getComponent(Animation);
+
+        if (this.effectTemplate) {
+            this.effectTemplate.active = false;
+        }
+
+        this.resolveScreenShake();
+    }
+
+    private resolveScreenShake(): void {
+        if (this.screenShake) {
+            return;
+        }
+
+        const canvas = this.node.parent;
+        this.screenShake = canvas?.getComponent(ScreenShake) ?? null;
     }
 
     protected update(deltaTime: number): void {
@@ -82,6 +123,8 @@ export class BallController extends Component {
         this.tempPosition.x += this.velocity.x * deltaTime;
         this.tempPosition.y += this.velocity.y * deltaTime;
 
+        this.effectCooldownLeft = Math.max(0, this.effectCooldownLeft - deltaTime);
+        this.refreshPaddleContactLocks();
         this.resolveVerticalBounds();
         this.resolvePaddleCollision('ai', this.aiPaddle!);
         this.resolvePaddleCollision('player', this.playerPaddle!);
@@ -91,10 +134,18 @@ export class BallController extends Component {
         }
 
         this.node.setPosition(this.tempPosition);
+        this.syncBallRollAnimation();
     }
 
     public setPlaying(value: boolean): void {
         this.playing = value;
+
+        if (value) {
+            this.ballAnimation?.play(this.moveClip);
+            this.syncBallRollAnimation();
+        } else {
+            this.ballAnimation?.stop();
+        }
     }
 
     /** Ẩn/hiện bóng — ẩn thì dừng và reset vận tốc. */
@@ -105,6 +156,7 @@ export class BallController extends Component {
             this.playing = false;
             this.velocity.set(0, 0, 0);
             this.currentSpeed = this.speed;
+            this.ballAnimation?.stop();
         }
     }
 
@@ -115,6 +167,9 @@ export class BallController extends Component {
     /** Đặt bóng tại điểm serve, chưa phát bóng. */
     public resetToServe(position: Vec3, directionX: number): void {
         this.currentSpeed = this.speed;
+        this.paddleContactLocked.ai = false;
+        this.paddleContactLocked.player = false;
+        this.effectCooldownLeft = 0;
         this.node.setPosition(position);
         this.velocity.set(directionX * this.currentSpeed, 0, 0);
     }
@@ -134,16 +189,18 @@ export class BallController extends Component {
     private resolveVerticalBounds(): void {
         const { bottom, top } = COURT_BOUNDS;
 
-        if (this.tempPosition.y + this.halfHeight >= top) {
+        if (this.tempPosition.y + this.halfHeight >= top && this.velocity.y > 0) {
             this.tempPosition.y = top - this.halfHeight;
             this.velocity.y = -Math.abs(this.velocity.y);
             this.boostSpeedAndApply();
+            this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, this.tempPosition.x, top);
         }
 
-        if (this.tempPosition.y - this.halfHeight <= bottom) {
+        if (this.tempPosition.y - this.halfHeight <= bottom && this.velocity.y < 0) {
             this.tempPosition.y = bottom + this.halfHeight;
             this.velocity.y = Math.abs(this.velocity.y);
             this.boostSpeedAndApply();
+            this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, this.tempPosition.x, bottom);
         }
     }
 
@@ -157,9 +214,13 @@ export class BallController extends Component {
                 return true;
             }
 
-            this.tempPosition.x = left + this.halfWidth;
-            this.velocity.x = Math.abs(this.velocity.x);
-            this.boostSpeedAndApply();
+            if (this.velocity.x < 0) {
+                this.tempPosition.x = left + this.halfWidth;
+                this.velocity.x = Math.abs(this.velocity.x);
+                this.boostSpeedAndApply();
+                this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, left, this.tempPosition.y);
+            }
+
             return false;
         }
 
@@ -169,9 +230,13 @@ export class BallController extends Component {
                 return true;
             }
 
-            this.tempPosition.x = right - this.halfWidth;
-            this.velocity.x = -Math.abs(this.velocity.x);
-            this.boostSpeedAndApply();
+            if (this.velocity.x > 0) {
+                this.tempPosition.x = right - this.halfWidth;
+                this.velocity.x = -Math.abs(this.velocity.x);
+                this.boostSpeedAndApply();
+                this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, right, this.tempPosition.y);
+            }
+
             return false;
         }
 
@@ -186,12 +251,17 @@ export class BallController extends Component {
     /** Dừng bóng và phát event ghi điểm. */
     private emitBallOut(scorer: PaddleSide): void {
         this.playing = false;
+        this.ballAnimation?.stop();
         const payload: BallOutPayload = { scorer };
         this.node.emit(GAME_EVENTS.BALL_OUT, payload);
     }
 
     /** Va chạm vợt — mặt trước bật góc; trên/dưới phản xạ; bỏ qua mặt sau. */
     private resolvePaddleCollision(side: PaddleSide, paddle: PaddleBase): void {
+        if (this.paddleContactLocked[side]) {
+            return;
+        }
+
         if (!paddle.intersectsBall(this.tempPosition.x, this.tempPosition.y, this.halfWidth, this.halfHeight)) {
             return;
         }
@@ -219,30 +289,137 @@ export class BallController extends Component {
         }
 
         const face = this.pickPaddleHitFace(frontFace, frontPen, penBottom, penTop);
+
+        if (face !== frontFace) {
+            this.tempPosition.y = face === 'top'
+                ? paddleY + padHalfH + this.halfHeight + sep
+                : paddleY - padHalfH - this.halfHeight - sep;
+            this.paddleContactLocked[side] = true;
+            return;
+        }
+
         let hitOffset = (ballY - paddleY) / padHalfH;
         hitOffset = Math.min(Math.max(hitOffset, -1), 1);
 
         this.boostSpeed();
 
-        if (face === frontFace) {
-            const directionX = side === 'ai' ? 1 : -1;
-            const jitterDeg = (Math.random() * 2 - 1) * this.bounceAngleJitterDeg;
-            const angleDeg = hitOffset * this.maxBounceAngleDeg + jitterDeg;
-            const angleRad = (angleDeg * Math.PI) / 180;
+        const directionX = side === 'ai' ? 1 : -1;
+        const jitterDeg = (Math.random() * 2 - 1) * this.bounceAngleJitterDeg;
+        const angleDeg = hitOffset * this.maxBounceAngleDeg + jitterDeg;
+        const angleRad = (angleDeg * Math.PI) / 180;
 
-            this.velocity.x = Math.cos(angleRad) * this.currentSpeed * directionX;
-            this.velocity.y = Math.sin(angleRad) * this.currentSpeed;
-            this.tempPosition.x = paddleX + directionX * (padHalfW + this.halfWidth + sep);
-        } else {
-            this.velocity.y = face === 'top' ? -Math.abs(this.velocity.y) : Math.abs(this.velocity.y);
-            this.applyCurrentSpeed();
-            this.tempPosition.y = face === 'top'
-                ? paddleY + padHalfH + this.halfHeight + sep
-                : paddleY - padHalfH - this.halfHeight - sep;
+        this.velocity.x = Math.cos(angleRad) * this.currentSpeed * directionX;
+        this.velocity.y = Math.sin(angleRad) * this.currentSpeed;
+        this.tempPosition.x = paddleX + directionX * (padHalfW + this.halfWidth + sep);
+
+        this.paddleContactLocked[side] = true;
+
+        paddle.playHitAnimation();
+        this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, paddleX, paddleY);
+
+        const payload: PaddleHitPayload = {
+            side,
+            hitOffset,
+            x: this.tempPosition.x,
+            y: this.tempPosition.y,
+        };
+        this.node.emit(GAME_EVENTS.PADDLE_HIT, payload);
+    }
+
+    /** Mở khóa vợt khi bóng đã ra khỏi hitbox — tránh spawn effect liên tục. */
+    private refreshPaddleContactLocks(): void {
+        if (this.paddleContactLocked.ai && this.aiPaddle
+            && !this.aiPaddle.intersectsBall(this.tempPosition.x, this.tempPosition.y, this.halfWidth, this.halfHeight)) {
+            this.paddleContactLocked.ai = false;
         }
 
-        const payload: PaddleHitPayload = { side, hitOffset };
-        this.node.emit(GAME_EVENTS.PADDLE_HIT, payload);
+        if (this.paddleContactLocked.player && this.playerPaddle
+            && !this.playerPaddle.intersectsBall(this.tempPosition.x, this.tempPosition.y, this.halfWidth, this.halfHeight)) {
+            this.paddleContactLocked.player = false;
+        }
+    }
+
+    private spawnHitEffect(ballX: number, ballY: number, towardX: number, towardY: number): void {
+        if (this.effectCooldownLeft > 0) {
+            return;
+        }
+
+        this.effectCooldownLeft = this.minEffectIntervalSec;
+        this.screenShake?.shake();
+
+        if (!this.effectTemplate) {
+            return;
+        }
+
+        const { x, y } = this.computeEffectPosition(ballX, ballY, towardX, towardY);
+
+        const parent = this.node.parent;
+        if (!parent) {
+            return;
+        }
+
+        const effect = instantiate(this.effectTemplate);
+        effect.active = true;
+        effect.layer = this.node.layer;
+        effect.setParent(parent);
+        effect.setPosition(x, y, 0);
+        effect.setSiblingIndex(parent.children.length - 1);
+
+        const animation = effect.getComponent(Animation);
+        if (!animation) {
+            effect.destroy();
+            return;
+        }
+
+        animation.stop();
+        animation.play(this.effectClip);
+
+        animation.once(Animation.EventType.FINISHED, () => {
+            effect.destroy();
+        }, effect);
+        this.scheduleOnce(() => {
+            if (effect.isValid) {
+                effect.destroy();
+            }
+        }, this.effectDuration);
+    }
+
+    /** Dịch effect từ tâm bóng về phía điểm chạm (vợt/tường). */
+    private computeEffectPosition(
+        ballX: number,
+        ballY: number,
+        towardX: number,
+        towardY: number,
+    ): { x: number; y: number } {
+        const dx = towardX - ballX;
+        const dy = towardY - ballY;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist <= 0 || this.effectInsetPx <= 0) {
+            return { x: ballX, y: ballY };
+        }
+
+        const move = Math.min(this.effectInsetPx, dist);
+
+        return {
+            x: ballX + (dx / dist) * move,
+            y: ballY + (dy / dist) * move,
+        };
+    }
+
+    /** Tốc độ clip `ball` theo vận tốc — cảm giác lăn nhanh hơn khi bóng nhanh. */
+    private syncBallRollAnimation(): void {
+        if (!this.ballAnimation || !this.playing) {
+            return;
+        }
+
+        const state = this.ballAnimation.getState(this.moveClip);
+        if (!state) {
+            return;
+        }
+
+        const ratio = this.currentSpeed / this.speed;
+        state.speed = Math.min(Math.max(ratio * 1.35, 1), 3.2);
     }
 
     private pickPaddleHitFace(
@@ -273,6 +450,7 @@ export class BallController extends Component {
     private boostSpeedAndApply(): void {
         this.boostSpeed();
         this.applyCurrentSpeed();
+        this.syncBallRollAnimation();
     }
 
     private applyCurrentSpeed(): void {

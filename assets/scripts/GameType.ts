@@ -18,8 +18,8 @@ export const COURT_BOUNDS = {
 } as const;
 
 export const GOAL_BOUNDS = {
-    bottom: -160,
-    top: 160,
+    bottom: -150,
+    top: 150,
 } as const;
 
 /** Vị trí X vợt/serve — player phải, AI trái. */
@@ -52,6 +52,8 @@ export type PaddleSide = 'player' | 'ai';
 export interface PaddleHitPayload {
     side: PaddleSide;
     hitOffset: number;
+    x: number;
+    y: number;
 }
 
 export interface BallOutPayload {

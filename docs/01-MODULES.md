@@ -12,9 +12,9 @@ Danh sách module logic của dự án PingPong. Cập nhật trạng thái mỗ
 | M04 | **Paddle (AI)** | Logic đuổi bóng, độ khó | M02, M03 | done | F002, F008 |
 | M05 | **Score** | Điểm số, điều kiện thắng, reset, UI hiển thị | M01 | done | F003, F005 |
 | M06 | **Input** | Touch / keyboard abstraction | — | done | F001 |
-| M07 | **Audio** | SFX va chạm, ghi điểm | M02, M05 | planned | F007 *(chờ asset)* |
-| M08 | **UI / HUD** | Scoreboard, sân/tường ngăn, popup Game Over (tween), layout Canvas | M05 | done | F003, F005, F006, F009, F010 |
-| M09 | **Menu** | Scene menu, chọn độ khó, popup hướng dẫn, chuyển scene Menu ↔ Game | — | done | F006, F008, F010 |
+| M07 | **Audio** | SFX va chạm, ghi điểm; tôn trọng toggle sound | M02, M05 | doing | F007, Settings |
+| M08 | **UI / HUD** | Scoreboard, popup Game Over/Settings, layout Canvas | M05 | done | F003, F005, F006, F009, F010, Settings |
+| M09 | **Menu** | Scene menu, popup hướng dẫn/cài đặt, chuyển scene | — | done | F006, F010, Settings |
 
 ## Quy ước đặt tên script (dự kiến)
 
@@ -30,9 +30,14 @@ Danh sách module logic của dự án PingPong. Cập nhật trạng thái mỗ
 | M06 | `assets/scripts/InputHandler.ts` | Component / util |
 | M07 | `assets/scripts/AudioManager.ts` | Component |
 | M08 | `assets/scripts/HudController.ts` | Component |
+| M08 | `assets/scripts/GoalCelebration.ts` | Effect ảnh GOAL khi ghi bàn |
 | M08 | `assets/scripts/popups/UiPopup.ts` | Component base popup (tween, PopupRoot) |
 | M08 | `assets/scripts/popups/GameOverPopup.ts` | Component con — Game Over |
 | M08 | `assets/scripts/popups/TutorialPopup.ts` | Component con — hướng dẫn Menu |
+| M08 | `assets/scripts/popups/SettingsPopup.ts` | Component con — cài đặt sound/effect |
+| M08 | `assets/scripts/ToggleSwitch.ts` | Toggle UI on/off + tween knob |
+| M08 | `assets/scripts/ScreenShake.ts` | Rung Canvas khi va chạm (toggle effect) |
+| — | `assets/scripts/SettingsService.ts` | localStorage sound/effect |
 | M08 | `assets/scripts/GameCanvasLayout.ts` | Component (gắn Canvas) |
 | M09 | `assets/scripts/MenuController.ts` | Component |
 
@@ -42,7 +47,7 @@ Xem chi tiết event trong [03-ARCHITECTURE.md](03-ARCHITECTURE.md).
 
 | Event | Publisher | Subscriber |
 |-------|-----------|------------|
-| `paddle-hit` | BallController | AudioManager |
+| `paddle-hit` | BallController | AudioManager, ScreenShake (qua BallController) |
 | `score-changed` | ScoreManager | HudController, AudioManager |
 | `ball-out` | BallController | GameManager, ScoreManager (F003) |
 | `match-ended` | GameManager | HudController, AudioManager |

@@ -1,8 +1,9 @@
-import { _decorator, Component, instantiate, Label, Prefab } from 'cc';
+import { _decorator, Component, instantiate, Prefab } from 'cc';
 import { GameOverPopup } from './popups/GameOverPopup';
 import { GAME_EVENTS } from './GameEvents';
 import { GameManager } from './GameManager';
 import { ScoreManager } from './ScoreManager';
+import { SpriteScoreDisplay } from './SpriteScoreDisplay';
 import { SCENE_NAMES, type MatchEndedPayload, type ScoreChangedPayload } from './GameType';
 import { loadScene } from './utils/SceneLoader';
 
@@ -11,11 +12,11 @@ const { ccclass, property } = _decorator;
 /** HUD score + spawn popup Game Over từ prefab. */
 @ccclass('HudController')
 export class HudController extends Component {
-    @property({ type: Label, tooltip: 'Điểm người chơi' })
-    private readonly playerScoreLabel: Label | null = null;
+    @property({ type: SpriteScoreDisplay, tooltip: 'Điểm người chơi' })
+    private readonly playerScoreDisplay: SpriteScoreDisplay | null = null;
 
-    @property({ type: Label, tooltip: 'Điểm AI' })
-    private readonly aiScoreLabel: Label | null = null;
+    @property({ type: SpriteScoreDisplay, tooltip: 'Điểm AI' })
+    private readonly aiScoreDisplay: SpriteScoreDisplay | null = null;
 
     @property({ type: ScoreManager, tooltip: 'Quản lý điểm' })
     private readonly scoreManager: ScoreManager | null = null;
@@ -27,12 +28,12 @@ export class HudController extends Component {
     private readonly gameOverPopupPrefab: Prefab | null = null;
 
     protected onLoad(): void {
-        if (!this.playerScoreLabel) {
-            throw new Error('HudController: playerScoreLabel is required');
+        if (!this.playerScoreDisplay) {
+            throw new Error('HudController: playerScoreDisplay is required');
         }
 
-        if (!this.aiScoreLabel) {
-            throw new Error('HudController: aiScoreLabel is required');
+        if (!this.aiScoreDisplay) {
+            throw new Error('HudController: aiScoreDisplay is required');
         }
 
         if (!this.scoreManager) {
@@ -51,7 +52,7 @@ export class HudController extends Component {
     protected onEnable(): void {
         this.scoreManager!.node.on(GAME_EVENTS.SCORE_CHANGED, this.onScoreChanged, this);
         this.gameManager!.node.on(GAME_EVENTS.MATCH_ENDED, this.onMatchEnded, this);
-        this.refreshScoreLabels(this.scoreManager!.getScores());
+        this.refreshScoreDisplays(this.scoreManager!.getScores());
     }
 
     protected onDisable(): void {
@@ -60,7 +61,7 @@ export class HudController extends Component {
     }
 
     private onScoreChanged(payload: ScoreChangedPayload): void {
-        this.refreshScoreLabels(payload);
+        this.refreshScoreDisplays(payload);
     }
 
     /** Spawn prefab Game Over khi trận kết thúc. */
@@ -83,8 +84,8 @@ export class HudController extends Component {
         );
     }
 
-    private refreshScoreLabels(payload: ScoreChangedPayload): void {
-        this.playerScoreLabel!.string = String(payload.player);
-        this.aiScoreLabel!.string = String(payload.ai);
+    private refreshScoreDisplays(payload: ScoreChangedPayload): void {
+        this.playerScoreDisplay!.setScore(payload.player);
+        this.aiScoreDisplay!.setScore(payload.ai);
     }
 }

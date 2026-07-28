@@ -1,6 +1,7 @@
 import { _decorator, Button, Component, instantiate, Label, Prefab } from 'cc';
 import { AiDifficultyLevel, setSelectedAiDifficulty } from './AiDifficulty';
 import { SCENE_NAMES, SHOW_DIFFICULTY_UI } from './GameType';
+import { SettingsPopup } from './popups/SettingsPopup';
 import { TutorialPopup } from './popups/TutorialPopup';
 import { markGameEntryFromMenu } from './GameSession';
 import { loadScene } from './utils/SceneLoader';
@@ -31,6 +32,12 @@ export class MenuController extends Component {
     @property({ type: Prefab, tooltip: 'Prefab popup hướng dẫn' })
     private readonly tutorialPopupPrefab: Prefab | null = null;
 
+    @property({ type: Button, tooltip: 'Mở cài đặt' })
+    private settingButton: Button | null = null;
+
+    @property({ type: Prefab, tooltip: 'Prefab popup cài đặt' })
+    private readonly settingsPopupPrefab: Prefab | null = null;
+
     protected onLoad(): void {
         if (!this.playButton) {
             throw new Error('MenuController: playButton is required');
@@ -44,6 +51,16 @@ export class MenuController extends Component {
             throw new Error('MenuController: tutorialPopupPrefab is required');
         }
 
+        this.settingButton ??= this.node.getChildByName('SettingButton')?.getComponent(Button) ?? null;
+
+        if (!this.settingButton) {
+            throw new Error('MenuController: settingButton is required');
+        }
+
+        if (!this.settingsPopupPrefab) {
+            throw new Error('MenuController: settingsPopupPrefab is required');
+        }
+
         setSelectedAiDifficulty(AiDifficultyLevel.Medium);
 
         if (!SHOW_DIFFICULTY_UI) {
@@ -54,6 +71,7 @@ export class MenuController extends Component {
     protected onEnable(): void {
         this.playButton!.node.on(Button.EventType.CLICK, this.onPlayClicked, this);
         this.helpButton!.node.on(Button.EventType.CLICK, this.onHelpClicked, this);
+        this.settingButton!.node.on(Button.EventType.CLICK, this.onSettingClicked, this);
 
         if (SHOW_DIFFICULTY_UI) {
             this.easyButton!.node.on(Button.EventType.CLICK, this.onEasyClicked, this);
@@ -65,6 +83,7 @@ export class MenuController extends Component {
     protected onDisable(): void {
         this.playButton!.node.off(Button.EventType.CLICK, this.onPlayClicked, this);
         this.helpButton!.node.off(Button.EventType.CLICK, this.onHelpClicked, this);
+        this.settingButton!.node.off(Button.EventType.CLICK, this.onSettingClicked, this);
 
         if (SHOW_DIFFICULTY_UI) {
             this.easyButton!.node.off(Button.EventType.CLICK, this.onEasyClicked, this);
@@ -88,6 +107,18 @@ export class MenuController extends Component {
 
     private onHardClicked(): void {
         setSelectedAiDifficulty(AiDifficultyLevel.Hard);
+    }
+
+    /** Spawn prefab cài đặt. */
+    private onSettingClicked(): void {
+        const node = instantiate(this.settingsPopupPrefab!);
+        const popup = node.getComponent(SettingsPopup);
+
+        if (!popup) {
+            throw new Error('MenuController: settingsPopupPrefab must have SettingsPopup');
+        }
+
+        popup.show();
     }
 
     /** Spawn prefab hướng dẫn chơi. */

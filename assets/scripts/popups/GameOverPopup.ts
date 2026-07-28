@@ -1,14 +1,17 @@
-import { _decorator, Button, Label } from 'cc';
+import { _decorator, Button, Node } from 'cc';
 import { type PaddleSide } from '../GameType';
 import { UiPopup } from './UiPopup';
 
 const { ccclass, property } = _decorator;
 
-/** Popup kết thúc trận — nút Chơi lại / Menu. */
+/** Popup kết thúc trận — ảnh win/lose + nút Chơi lại / Menu. */
 @ccclass('GameOverPopup')
 export class GameOverPopup extends UiPopup {
-    @property({ type: Label, tooltip: 'Tiêu đề thắng/thua' })
-    private titleLabel: Label | null = null;
+    @property({ type: Node, tooltip: 'Ảnh thắng' })
+    private winImageNode: Node | null = null;
+
+    @property({ type: Node, tooltip: 'Ảnh thua' })
+    private loseImageNode: Node | null = null;
 
     @property({ type: Button, tooltip: 'Chơi lại' })
     private restartButton: Button | null = null;
@@ -23,8 +26,8 @@ export class GameOverPopup extends UiPopup {
         super.onLoad();
         this.resolvePanelRefs();
 
-        if (!this.titleLabel || !this.restartButton || !this.menuButton) {
-            throw new Error('GameOverPopup: titleLabel, restartButton, menuButton are required');
+        if (!this.winImageNode || !this.loseImageNode || !this.restartButton || !this.menuButton) {
+            throw new Error('GameOverPopup: winImageNode, loseImageNode, restartButton, menuButton are required');
         }
     }
 
@@ -38,9 +41,11 @@ export class GameOverPopup extends UiPopup {
         this.menuButton!.node.off(Button.EventType.CLICK, this.onMenuClicked, this);
     }
 
-    /** Cấu hình nội dung rồi hiện popup. */
+    /** Cấu hình ảnh kết quả rồi hiện popup. */
     public open(winner: PaddleSide, onRestart: () => void, onMenu: () => void): void {
-        this.titleLabel!.string = winner === 'player' ? 'Bạn thắng!' : 'AI thắng!';
+        const playerWon = winner === 'player';
+        this.winImageNode!.active = playerWon;
+        this.loseImageNode!.active = !playerWon;
         this.onRestart = onRestart;
         this.onMenu = onMenu;
         this.show();
@@ -71,7 +76,8 @@ export class GameOverPopup extends UiPopup {
             return;
         }
 
-        this.titleLabel ??= panel.getChildByName('TitleLabel')?.getComponent(Label) ?? null;
+        this.winImageNode ??= panel.getChildByName('win');
+        this.loseImageNode ??= panel.getChildByName('lose');
         this.restartButton ??= panel.getChildByName('RestartButton')?.getComponent(Button) ?? null;
         this.menuButton ??= panel.getChildByName('MenuButton')?.getComponent(Button) ?? null;
     }
