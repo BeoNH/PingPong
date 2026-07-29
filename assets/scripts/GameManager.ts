@@ -94,11 +94,13 @@ export class GameManager extends Component {
 
     protected onEnable(): void {
         this.ballController!.node.on(GAME_EVENTS.BALL_OUT, this.onBallOut, this);
+        this.ballController!.node.on(GAME_EVENTS.BALL_EXITED, this.onBallExited, this);
         this.node.on(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
     }
 
     protected onDisable(): void {
         this.ballController!.node.off(GAME_EVENTS.BALL_OUT, this.onBallOut, this);
+        this.ballController!.node.off(GAME_EVENTS.BALL_EXITED, this.onBallExited, this);
         this.node.off(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
@@ -146,15 +148,13 @@ export class GameManager extends Component {
         );
     }
 
-    /** Xử lý bóng ra biên — ghi điểm, ẩn bóng, serve lại. */
+    /** Xử lý bóng vào khung goal — ghi điểm; bóng vẫn lăn cho đến khi ra khỏi màn hình. */
     private onBallOut(payload: BallOutPayload): void {
         if (this.state !== GameState.Playing || this.pendingPointReset) {
             return;
         }
 
         this.state = GameState.PointScored;
-        this.ballController!.setPlaying(false);
-        this.ballController!.setVisible(false);
         this.serveDirectionX = payload.scorer === 'player' ? SERVE_DIR.PLAYER : SERVE_DIR.AI;
         this.prepareAfterPoint();
 
@@ -170,6 +170,16 @@ export class GameManager extends Component {
 
             this.continueAfterPoint();
         });
+    }
+
+    /** Ẩn bóng sau khi đã lăn hết khỏi màn hình. */
+    private onBallExited(): void {
+        if (this.state !== GameState.PointScored && this.state !== GameState.GameOver) {
+            return;
+        }
+
+        this.ballController!.setPlaying(false);
+        this.ballController!.setVisible(false);
     }
 
     /** Tiếp tục sau effect GOAL — serve lại. */

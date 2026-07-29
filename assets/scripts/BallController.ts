@@ -2,6 +2,7 @@ import { _decorator, Animation, Component, instantiate, Node, Sprite, UITransfor
 import { GAME_EVENTS } from './GameEvents';
 import {
     COURT_BOUNDS,
+    DESIGN_WIDTH,
     GOAL_BOUNDS,
     type BallOutPayload,
     type PaddleHitPayload,
@@ -69,6 +70,9 @@ export class BallController extends Component {
         player: false,
     };
 
+    private goalExitActive = false;
+    private goalExitSide: PaddleSide | null = null;
+
     /** Khoảng cách tối thiểu giữa hai lần spawn effect (mọi nguồn). */
     private effectCooldownLeft = 0;
     private readonly minEffectIntervalSec = 0.1;
@@ -124,14 +128,22 @@ export class BallController extends Component {
         this.tempPosition.y += this.velocity.y * deltaTime;
 
         this.effectCooldownLeft = Math.max(0, this.effectCooldownLeft - deltaTime);
+
+        if (this.goalExitActive) {
+            if (this.isFullyOffScreen()) {
+                this.completeGoalExit();
+            }
+
+            this.node.setPosition(this.tempPosition);
+            this.syncBallRollAnimation();
+            return;
+        }
+
         this.refreshPaddleContactLocks();
         this.resolveVerticalBounds();
         this.resolvePaddleCollision('ai', this.aiPaddle!);
         this.resolvePaddleCollision('player', this.playerPaddle!);
-
-        if (this.resolveHorizontalOut()) {
-            return;
-        }
+        this.resolveHorizontalOut();
 
         this.node.setPosition(this.tempPosition);
         this.syncBallRollAnimation();
@@ -156,6 +168,7 @@ export class BallController extends Component {
             this.playing = false;
             this.velocity.set(0, 0, 0);
             this.currentSpeed = this.speed;
+            this.clearGoalExit();
             this.ballAnimation?.stop();
         }
     }
@@ -170,6 +183,7 @@ export class BallController extends Component {
         this.paddleContactLocked.ai = false;
         this.paddleContactLocked.player = false;
         this.effectCooldownLeft = 0;
+        this.clearGoalExit();
         this.node.setPosition(position);
         this.velocity.set(directionX * this.currentSpeed, 0, 0);
     }
@@ -205,13 +219,13 @@ export class BallController extends Component {
     }
 
     /** Ghi điểm hoặc nảy khi bóng chạm biên trái/phải — chỉ goal Y mới tính điểm. */
-    private resolveHorizontalOut(): boolean {
+    private resolveHorizontalOut(): void {
         const { left, right } = COURT_BOUNDS;
 
         if (this.tempPosition.x - this.halfWidth <= left) {
             if (this.isInGoalZone()) {
-                this.emitBallOut('player');
-                return true;
+                this.beginGoalExit('player');
+                return;
             }
 
             if (this.velocity.x < 0) {
@@ -221,13 +235,13 @@ export class BallController extends Component {
                 this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, left, this.tempPosition.y);
             }
 
-            return false;
+            return;
         }
 
         if (this.tempPosition.x + this.halfWidth >= right) {
             if (this.isInGoalZone()) {
-                this.emitBallOut('ai');
-                return true;
+                this.beginGoalExit('ai');
+                return;
             }
 
             if (this.velocity.x > 0) {
@@ -236,11 +250,7 @@ export class BallController extends Component {
                 this.boostSpeedAndApply();
                 this.spawnHitEffect(this.tempPosition.x, this.tempPosition.y, right, this.tempPosition.y);
             }
-
-            return false;
         }
-
-        return false;
     }
 
     private isInGoalZone(): boolean {
@@ -248,12 +258,43 @@ export class BallController extends Component {
         return this.tempPosition.y >= bottom && this.tempPosition.y <= top;
     }
 
-    /** Dừng bóng và phát event ghi điểm. */
-    private emitBallOut(scorer: PaddleSide): void {
-        this.playing = false;
-        this.ballAnimation?.stop();
+    /** Phát event ghi điểm — bóng tiếp tục lăn ra khỏi màn hình. */
+    private beginGoalExit(scorer: PaddleSide): void {
+        if (this.goalExitActive) {
+            return;
+        }
+
+        this.goalExitActive = true;
+        this.goalExitSide = scorer;
         const payload: BallOutPayload = { scorer };
         this.node.emit(GAME_EVENTS.BALL_OUT, payload);
+    }
+
+    private isFullyOffScreen(): boolean {
+        const halfScreen = DESIGN_WIDTH * 0.5;
+
+        if (this.goalExitSide === 'player') {
+            return this.tempPosition.x + this.halfWidth < -halfScreen;
+        }
+
+        if (this.goalExitSide === 'ai') {
+            return this.tempPosition.x - this.halfWidth > halfScreen;
+        }
+
+        return false;
+    }
+
+    /** Dừng bóng sau khi đã lăn hết khỏi màn hình. */
+    private completeGoalExit(): void {
+        this.clearGoalExit();
+        this.playing = false;
+        this.ballAnimation?.stop();
+        this.node.emit(GAME_EVENTS.BALL_EXITED);
+    }
+
+    private clearGoalExit(): void {
+        this.goalExitActive = false;
+        this.goalExitSide = null;
     }
 
     /** Va chạm vợt — mặt trước bật góc; trên/dưới phản xạ; bỏ qua mặt sau. */
