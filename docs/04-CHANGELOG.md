@@ -14,6 +14,7 @@ Không ghi chi tiết implementation — chi tiết nằm trong spec `docs/featu
 
 | Ngày | Feature | Thay đổi | File / module |
 |------|---------|----------|---------------|
+| 2026-07-30 | F003 | fix: Bàn đầu hiện GOAL — warm-up node + hiện scale 1 ngay, pop từ bàn 2 | GoalCelebration.ts, GameManager.ts |
 | 2026-07-28 | Settings | change: ScreenShake dao động sin giảm dần — mượt hơn, va chạm liên tiếp refresh | ScreenShake.ts |
 | 2026-07-28 | Settings | add: SettingsPopup + ToggleSwitch + localStorage sound/effect + ScreenShake | SettingsPopup.ts, ToggleSwitch.ts, ScreenShake.ts, SettingsService.ts, MenuController.ts, BallController.ts, AudioManager.ts |
 | 2026-07-28 | F003 | fix: Goal tween chạy ngay + đưa goal lên trên — ổn định bàn đầu | GoalCelebration.ts |

@@ -45,6 +45,7 @@ export class GameManager extends Component {
     private state: GameState = GameState.Serving;
     private serveDirectionX: ServeDirection = SERVE_DIR.PLAYER;
     private pendingPointReset = false;
+    private pendingMatchEnded = false;
     private readonly servePosition: Vec3 = new Vec3();
 
     protected onLoad(): void {
@@ -104,6 +105,7 @@ export class GameManager extends Component {
         this.node.off(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
+        this.unschedule(this.finishGoalPrime);
         this.goalCelebration?.stop();
     }
 
@@ -126,12 +128,25 @@ export class GameManager extends Component {
 
         this.unschedule(this.continueAfterPoint);
         this.unschedule(this.startRally);
+        this.unschedule(this.finishGoalPrime);
         this.goalCelebration?.stop();
         this.pendingPointReset = false;
         this.serveDirectionX = SERVE_DIR.PLAYER;
         this.scoreManager!.resetScores();
         this.prepareNormalMatchStart();
     }
+
+    private primeGoalCelebration(): void {
+        this.resolveGoalCelebration();
+        this.goalCelebration!.resetForMatch();
+        this.goalCelebration!.primeVisible();
+        this.unschedule(this.finishGoalPrime);
+        this.scheduleOnce(this.finishGoalPrime, 0);
+    }
+
+    private readonly finishGoalPrime = (): void => {
+        this.goalCelebration?.finishPrime();
+    };
 
     /** Giao bóng và bắt đầu rally. */
     public startRally(): void {
@@ -160,6 +175,13 @@ export class GameManager extends Component {
 
         const matchEnded = this.scoreManager!.addPoint(payload.scorer);
         this.pendingPointReset = true;
+        this.pendingMatchEnded = matchEnded;
+        this.resolveGoalCelebration();
+        this.playGoalCelebration();
+    }
+
+    private playGoalCelebration(): void {
+        const matchEnded = this.pendingMatchEnded;
         this.goalCelebration!.play(() => {
             this.pendingPointReset = false;
 
@@ -267,6 +289,7 @@ export class GameManager extends Component {
         this.hideHandHint();
         this.aiPaddle!.node.active = true;
         this.serveDirectionX = SERVE_DIR.AI;
+        this.primeGoalCelebration();
         this.enterServing();
         this.scheduleLaunchRally();
     }
@@ -275,6 +298,7 @@ export class GameManager extends Component {
         this.hideHandHint();
         this.aiPaddle!.node.active = true;
         this.resetMatchPositions();
+        this.primeGoalCelebration();
         this.enterServing();
         this.scheduleLaunchRally();
     }
