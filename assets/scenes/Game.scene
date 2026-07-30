@@ -983,7 +983,9 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "shakeTarget": null,
+    "shakeTarget": {
+      "__id__": 3
+    },
     "amplitude": 7,
     "duration": 0.2,
     "frequency": 22,
