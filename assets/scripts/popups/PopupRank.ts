@@ -34,11 +34,6 @@ export class PopupRank extends UiPopup {
         this.initRankingList();
     }
 
-    protected resolveStructure(): void {
-        this.bg ??= this.node.getChildByName('BG');
-        this.container ??= this.node.getChildByName('content');
-    }
-
     private initRankingList(): void {
         const layoutTOP3 = this.layoutTOP3!;
         const layoutBXH = this.layoutBXH!;

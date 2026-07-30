@@ -1,5 +1,4 @@
 import { _decorator, Canvas, Component, director, Node, tween, UIOpacity, Vec3, warn } from 'cc';
-import { SCENE_NODE_NAMES } from '../GameType';
 
 const { ccclass, property } = _decorator;
 
@@ -27,9 +26,6 @@ export class UiPopup extends Component {
     @property({ tooltip: 'Độ mờ của bg (0–255)' })
     protected bgOpacity = 100;
 
-    @property({ tooltip: 'Destroy node sau khi hide (prefab spawn)' })
-    protected destroyOnHide = true;
-
     private isVisible = false;
     private isAnimating = false;
     private bgOpacityComp: UIOpacity | null = null;
@@ -37,7 +33,6 @@ export class UiPopup extends Component {
     private hideComplete: (() => void) | null = null;
 
     protected onLoad(): void {
-        this.resolveStructure();
         this.bgOpacityComp = this.bg?.getComponent(UIOpacity) ?? this.bg?.addComponent(UIOpacity) ?? null;
 
         if (this.bg && this.closeOnBgTap) {
@@ -168,19 +163,9 @@ export class UiPopup extends Component {
             return null;
         }
 
-        this.cachedPopupRoot = canvas.node.getChildByName(SCENE_NODE_NAMES.POPUP_ROOT) ?? canvas.node;
+        this.cachedPopupRoot = canvas.node.getChildByName('PopupRoot') ?? canvas.node;
 
         return this.cachedPopupRoot;
-    }
-
-    protected resolveStructure(): void {
-        if (!this.bg) {
-            this.bg = this.node.getChildByName('bg') ?? this.node.getChildByName('Overlay');
-        }
-
-        if (!this.container) {
-            this.container = this.node.getChildByName('container') ?? this.node.getChildByName('Panel');
-        }
     }
 
     private attachToPopupRoot(): void {
@@ -217,9 +202,6 @@ export class UiPopup extends Component {
         const complete = this.hideComplete;
         this.hideComplete = null;
         complete?.();
-
-        if (this.destroyOnHide) {
-            this.node.destroy();
-        }
+        this.node.destroy();
     }
 }

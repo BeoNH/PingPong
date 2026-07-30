@@ -41,7 +41,6 @@ export type ServeDirection = (typeof SERVE_DIR)[keyof typeof SERVE_DIR];
 export const SCENE_NODE_NAMES = {
     BG: 'BG',
     CAMERA: 'Camera',
-    POPUP_ROOT: 'PopupRoot',
 } as const;
 
 /** Tạm ẩn UI chọn độ khó Menu — mặc định AI Vừa. */
