@@ -1,4 +1,5 @@
 import { _decorator, instantiate, Label, Node, warn } from 'cc';
+import { userDATA } from '../GameType';
 import { NetworkManager } from '../NetworkManager';
 import { UiPopup } from './UiPopup';
 
@@ -28,9 +29,9 @@ export class PopupHistory extends UiPopup {
     }
 
     private initHistoryList(): void {
-        const url = `/imageToWord/getHistory`;
+        const url = `/getHistory`;
         const data = {
-            username: undefined as string | undefined,
+            username: userDATA.userName,
         };
 
         NetworkManager.instance.httpPost(url, data).then((res) => {
@@ -38,7 +39,6 @@ export class PopupHistory extends UiPopup {
                 warn(`[PopupHistory] ${url} => ${String(res)}`);
                 return;
             }
-            return;
 
             const listHis = (res as { history: { date: string; numScore: string | number }[] }).history;
             const pool = this.layoutHistory!.children;

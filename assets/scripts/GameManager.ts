@@ -15,6 +15,19 @@ const HAND_ANIM_CLIP = 'hand';
 /** Điều phối trạng thái trận: serve → rally → điểm → game over. */
 @ccclass('GameManager')
 export class GameManager extends Component {
+    private static _instance: GameManager | null = null;
+
+    public static get instance(): GameManager {
+        if (!GameManager._instance) {
+            throw new Error('GameManager.instance: chưa khởi tạo');
+        }
+        return GameManager._instance;
+    }
+
+    /** Điểm người chơi hiện tại (dùng khi lưu score API). */
+    public get score(): number {
+        return this.scoreManager!.getScores().player;
+    }
     @property({ type: BallController, tooltip: 'Bóng' })
     private readonly ballController: BallController | null = null;
 
@@ -49,6 +62,8 @@ export class GameManager extends Component {
     private readonly servePosition: Vec3 = new Vec3();
 
     protected onLoad(): void {
+        GameManager._instance = this;
+
         if (!this.ballController) {
             throw new Error('GameManager: ballController is required');
         }
@@ -97,6 +112,12 @@ export class GameManager extends Component {
         this.ballController!.node.on(GAME_EVENTS.BALL_OUT, this.onBallOut, this);
         this.ballController!.node.on(GAME_EVENTS.BALL_EXITED, this.onBallExited, this);
         this.node.on(GAME_EVENTS.PLAYER_PADDLE_INPUT, this.onPlayerPaddleInput, this);
+    }
+
+    protected onDestroy(): void {
+        if (GameManager._instance === this) {
+            GameManager._instance = null;
+        }
     }
 
     protected onDisable(): void {

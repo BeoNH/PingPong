@@ -57,9 +57,20 @@ export interface NetworkConfig {
     accessToken?: string;
 }
 
-export function urlParam(name: string): string | null {
-    const results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.search);
-    return results !== null ? (results[1] || '') : null;
+const PARAMS = ((): Record<string, string> => {
+    const params = new URLSearchParams(window.location.search);
+    const result: Record<string, string> = {};
+
+    for (const [key, value] of params) {
+        result[key] = value;
+    }
+
+    return result;
+})();
+
+/** Lấy query param từ URL trang (ví dụ token SSO). */
+export function urlParam(key: string): string | undefined {
+    return PARAMS[key];
 }
 
 const DEFAULT_CONFIG: Required<NetworkConfig> = {
@@ -71,7 +82,7 @@ const DEFAULT_CONFIG: Required<NetworkConfig> = {
     maxReconnectDelay: 30_000,
     pingIntervalMs: 3000,
     accessToken: "",
-    httpBaseUrl: `${urlParam('url_api') ?? "https://api-dev.lingox.co/minigame"}`,
+    httpBaseUrl: PARAMS.url_api == "api-demo.gamebatta.com" ? `https://${PARAMS.url_api}/game-service/api-minigame` : 'https://api-kh.gamebatta.com/game-service/api-minigame',
 };
 
 // ── Kiểu dữ liệu nội bộ ───────────────────────────────────────────────────────
@@ -431,6 +442,7 @@ export class NetworkManager {
     public setAccessToken(token: string): void {
         this.cfg.accessToken = token;
     }
+
     public get hasAccessToken(): boolean {
         return !!this.cfg.accessToken;
     }
@@ -442,22 +454,24 @@ export class NetworkManager {
      */
     public async httpRequest<T>(path: string, init: RequestInit = {}): Promise<T | null> {
         const url = `${this.cfg.httpBaseUrl}${path}`;
+        const method = init.method ?? 'GET';
 
-        if (init.body) {
-            console.log(`[NetworkManager] HTTP ${init.method ?? "GET"} ${url}`, JSON.parse(init.body as string));
+        if (init.body && typeof init.body === 'string') {
+            console.log(`[NetworkManager] HTTP ${method} ${url}`, JSON.parse(init.body));
         } else {
-            console.log(`[NetworkManager] HTTP ${init.method ?? "GET"} ${url}`);
+            console.log(`[NetworkManager] HTTP ${method} ${url}`);
         }
 
         try {
             const response = await fetch(url, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + this.cfg.accessToken,
-                    ...(init.headers ?? {})
-                },
                 ...init,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.cfg.accessToken}`,
+                    ...(init.headers ?? {}),
+                },
             });
+
             if (!response.ok) {
                 console.warn(`[NetworkManager] HTTP ${response.status} ${response.statusText} — ${url}`);
                 return null;
@@ -466,7 +480,6 @@ export class NetworkManager {
             const data = await response.json() as T;
             console.log(`[NetworkManager] HTTP RES ${url}`, data);
             return data;
-
         } catch (e) {
             console.warn(`[NetworkManager] ${e}`);
             return null;
@@ -480,11 +493,16 @@ export class NetworkManager {
         });
     }
 
-    /** Tiện ích: HTTP POST với body JSON */
+    /** HTTP POST — gộp PARAMS, source, game_name theo convention API minigame. */
     public httpPost<TRes = unknown, TReq = unknown>(path: string, body: TReq): Promise<TRes | null> {
         return this.httpRequest<TRes>(path, {
             method: "POST",
-            body: JSON.stringify(body),
+            body: JSON.stringify({
+                ...safePayload(body),
+                ...PARAMS,
+                source: PARAMS.url_api ?? '',
+                game_name: "ping-pong",
+            }),
         });
     }
 }

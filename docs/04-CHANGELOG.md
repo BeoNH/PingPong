@@ -14,6 +14,8 @@ Không ghi chi tiết implementation — chi tiết nằm trong spec `docs/featu
 
 | Ngày | Feature | Thay đổi | File / module |
 |------|---------|----------|---------------|
+| 2026-07-30 | — | add: Login token URL, lưu score API, popup History/Rank dùng userDATA | GameType.ts, MenuController.ts, HudController.ts, PopupHistory.ts, PopupRank.ts |
+| 2026-07-30 | — | change: NetworkManager HTTP POST gộp URL params + game_name/source | NetworkManager.ts |
 | 2026-07-30 | F003 | fix: Bàn đầu hiện GOAL — warm-up node + hiện scale 1 ngay, pop từ bàn 2 | GoalCelebration.ts, GameManager.ts |
 | 2026-07-28 | Settings | change: ScreenShake dao động sin giảm dần — mượt hơn, va chạm liên tiếp refresh | ScreenShake.ts |
 | 2026-07-28 | Settings | add: SettingsPopup + ToggleSwitch + localStorage sound/effect + ScreenShake | SettingsPopup.ts, ToggleSwitch.ts, ScreenShake.ts, SettingsService.ts, MenuController.ts, BallController.ts, AudioManager.ts |

@@ -2,6 +2,8 @@ import { _decorator, Component, instantiate, Prefab } from 'cc';
 import { GameOverPopup } from './popups/GameOverPopup';
 import { GAME_EVENTS } from './GameEvents';
 import { GameManager } from './GameManager';
+import { NetworkManager } from './NetworkManager';
+import { userDATA } from './GameType';
 import { ScoreManager } from './ScoreManager';
 import { SpriteScoreDisplay } from './SpriteScoreDisplay';
 import { SCENE_NAMES, type MatchEndedPayload, type ScoreChangedPayload } from './GameType';
@@ -66,6 +68,11 @@ export class HudController extends Component {
 
     /** Spawn prefab Game Over khi trận kết thúc. */
     private onMatchEnded(payload: MatchEndedPayload): void {
+        void NetworkManager.instance.httpPost('/saveScore', {
+            username: userDATA.userName,
+            score: GameManager.instance.score,
+        });
+
         const node = instantiate(this.gameOverPopupPrefab!);
         const popup = node.getComponent(GameOverPopup);
 

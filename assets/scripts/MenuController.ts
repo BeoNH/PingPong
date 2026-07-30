@@ -1,6 +1,7 @@
 import { _decorator, Button, Component, instantiate, Label, Prefab } from 'cc';
 import { AiDifficultyLevel, setSelectedAiDifficulty } from './AiDifficulty';
-import { SCENE_NAMES, SHOW_DIFFICULTY_UI } from './GameType';
+import { SCENE_NAMES, SHOW_DIFFICULTY_UI, userDATA } from './GameType';
+import { NetworkManager, urlParam } from './NetworkManager';
 import { PopupHistory } from './popups/PopupHistory';
 import { PopupRank } from './popups/PopupRank';
 import { SettingsPopup } from './popups/SettingsPopup';
@@ -81,6 +82,28 @@ export class MenuController extends Component {
 
         if (!SHOW_DIFFICULTY_UI) {
             this.hideDifficultyUi();
+        }
+    }
+
+    protected start(): void {
+        void this.login();
+
+        // setTimeout(() => {
+        // void NetworkManager.instance.httpPost('/saveScore', {
+        //         username: userDATA.userName,
+        //         score: 1,
+        //     });
+        // }, 2000);
+    }
+
+    /** Đăng nhập qua token trên URL, lưu username vào userDATA. */
+    private async login(): Promise<void> {
+        const login = await NetworkManager.instance.httpPost<{ username?: string }>('/login', {
+            token: urlParam('token'),
+        });
+
+        if (login) {
+            userDATA.userName = login.username;
         }
     }
 

@@ -1,5 +1,12 @@
 /** Types, enums và hằng số gameplay dùng chung. */
 
+/** Dữ liệu người chơi sau đăng nhập API. */
+export interface UserData {
+    userName?: string;
+}
+
+export const userDATA: UserData = {};
+
 export const SCENE_NAMES = {
     MENU: 'Menu',
     GAME: 'Game',

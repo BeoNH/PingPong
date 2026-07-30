@@ -1,4 +1,5 @@
 import { _decorator, instantiate, Label, Node, warn } from 'cc';
+import { userDATA } from '../GameType';
 import { NetworkManager } from '../NetworkManager';
 import { UiPopup } from './UiPopup';
 
@@ -40,9 +41,9 @@ export class PopupRank extends UiPopup {
         const playerRank = this.playerRank!;
         const itemBXH = this.itemBXH!;
 
-        const url = `/imageToWord/getRankList`;
+        const url = `/getRankList`;
         const data = {
-            username: undefined as string | undefined,
+            username: userDATA.userName,
         };
 
         NetworkManager.instance.httpPost(url, data).then((res) => {
@@ -55,8 +56,6 @@ export class PopupRank extends UiPopup {
                 board: { name: string; numScore: string | number }[];
                 yourInfo: { rank: string | number; name: string; numScore: string | number };
             }).board;
-
-            return;
 
             for (let i = 0; i < 3; i++) {
                 const e = layoutTOP3.children[i];

@@ -38,6 +38,7 @@ Danh sách module logic của dự án PingPong. Cập nhật trạng thái mỗ
 | M08 | `assets/scripts/ToggleSwitch.ts` | Toggle UI on/off + tween knob |
 | M08 | `assets/scripts/ScreenShake.ts` | Rung Canvas khi va chạm (toggle effect) |
 | — | `assets/scripts/SettingsService.ts` | localStorage sound/effect |
+| — | `assets/scripts/NetworkManager.ts` | WebSocket + HTTP REST (URL params, Bearer token) |
 | M08 | `assets/scripts/GameCanvasLayout.ts` | Component (gắn Canvas) |
 | M09 | `assets/scripts/MenuController.ts` | Component |
 
