@@ -71,6 +71,7 @@ export class HudController extends Component {
         void NetworkManager.instance.httpPost('/saveScore', {
             username: userDATA.userName,
             score: GameManager.instance.score,
+            time: 0
         });
 
         const node = instantiate(this.gameOverPopupPrefab!);

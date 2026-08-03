@@ -88,12 +88,13 @@ export class MenuController extends Component {
     protected start(): void {
         void this.login();
 
-        // setTimeout(() => {
-        // void NetworkManager.instance.httpPost('/saveScore', {
-        //         username: userDATA.userName,
-        //         score: 1,
-        //     });
-        // }, 2000);
+        setTimeout(() => {
+        void NetworkManager.instance.httpPost('/saveScore', {
+                username: userDATA.userName,
+                score: 1,
+                time: 0
+            });
+        }, 2000);
     }
 
     /** Đăng nhập qua token trên URL, lưu username vào userDATA. */
