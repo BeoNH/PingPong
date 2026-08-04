@@ -2641,8 +2641,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 13.39599609375,
-      "height": 37.28
+      "width": 11.39599609375,
+      "height": 35.28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2672,9 +2672,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "1",
@@ -2697,7 +2697,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -2706,7 +2706,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -2716,8 +2716,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -2803,8 +2803,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 75.94197082519531,
-      "height": 37.28
+      "width": 73.94197082519531,
+      "height": 35.28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2834,9 +2834,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "BeoNH",
@@ -2859,7 +2859,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -2868,7 +2868,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -2878,8 +2878,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -2996,9 +2996,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "000s",
@@ -3021,7 +3021,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -3030,7 +3030,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -3040,8 +3040,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -3127,8 +3127,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 76.35997009277344,
-      "height": 37.28
+      "width": 74.35997009277344,
+      "height": 35.28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -3158,9 +3158,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "00000",
@@ -3183,7 +3183,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -3192,7 +3192,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -3202,8 +3202,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -3560,9 +3560,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "2",
@@ -3585,7 +3585,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -3594,7 +3594,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -3604,8 +3604,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -3722,9 +3722,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "BeoNH",
@@ -3747,7 +3747,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -3756,7 +3756,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -3766,8 +3766,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -3884,9 +3884,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "000s",
@@ -3909,7 +3909,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -3918,7 +3918,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -3928,8 +3928,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -4046,9 +4046,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "00000",
@@ -4071,7 +4071,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -4080,7 +4080,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -4090,8 +4090,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -4448,9 +4448,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "3",
@@ -4473,7 +4473,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -4482,7 +4482,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -4492,8 +4492,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -4610,9 +4610,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "BeoNH",
@@ -4635,7 +4635,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -4644,7 +4644,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -4654,8 +4654,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -4772,9 +4772,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "000s",
@@ -4797,7 +4797,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -4806,7 +4806,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -4816,8 +4816,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -4934,9 +4934,9 @@
     "_dstBlendFactor": 4,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 41,
+      "r": 255,
+      "g": 255,
+      "b": 255,
       "a": 255
     },
     "_string": "00000",
@@ -4959,7 +4959,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": true,
+    "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -4968,7 +4968,7 @@
       "a": 255
     },
     "_outlineWidth": 1,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -4978,8 +4978,8 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 1,
+      "y": -2
     },
     "_shadowBlur": 2,
     "_id": ""
@@ -7382,7 +7382,6 @@
     "startScale": 0.15,
     "endScale": 1,
     "bgOpacity": 100,
-    "destroyOnHide": true,
     "layoutTOP3": {
       "__id__": 89
     },
