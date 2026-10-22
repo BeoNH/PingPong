@@ -82,7 +82,7 @@ const DEFAULT_CONFIG: Required<NetworkConfig> = {
     maxReconnectDelay: 30_000,
     pingIntervalMs: 3000,
     accessToken: "",
-    httpBaseUrl: PARAMS.url_api == "api-demo.gamebatta.com" ? `https://${PARAMS.url_api}/game-service/api-minigame` : 'https://api-kh.gamebatta.com/game-service/api-minigame',
+    httpBaseUrl: `https://${PARAMS.url_api}/game-service/api-minigame`,
 };
 
 // ── Kiểu dữ liệu nội bộ ───────────────────────────────────────────────────────
