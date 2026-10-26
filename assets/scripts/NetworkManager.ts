@@ -467,7 +467,6 @@ export class NetworkManager {
                 ...init,
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${this.cfg.accessToken}`,
                     ...(init.headers ?? {}),
                 },
             });
